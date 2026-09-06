@@ -10,6 +10,7 @@ import (
 // change membership between reads.
 type MembershipResolver struct{ definitions []Definition }
 
+// NewMembershipResolver validates and copies definitions for stable later reads.
 func NewMembershipResolver(definitions []Definition) (*MembershipResolver, error) {
 	if _, err := resolveMembership(definitions, nil); err != nil {
 		return nil, err
@@ -24,6 +25,8 @@ func NewMembershipResolver(definitions []Definition) (*MembershipResolver, error
 	}
 	return &MembershipResolver{definitions: copied}, nil
 }
+
+// Resolve returns sorted project memberships for each file; files outside roots have empty slices.
 func (r *MembershipResolver) Resolve(files []FileRef) (map[FileRef][]domain.ProjectID, error) {
 	if r == nil {
 		return nil, fmt.Errorf("membership resolver is required")

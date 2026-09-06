@@ -6,8 +6,10 @@ import (
 	"math"
 )
 
+// RiskVersion identifies the weighting and threshold contract used by ScoreRisk.
 const RiskVersion = "risk/v1"
 
+// RiskFactor identifies a normalized [0,100] input, where larger is worse.
 type RiskFactor string
 
 const (
@@ -20,6 +22,7 @@ const (
 	ConfirmedBugs      RiskFactor = "confirmed_bugs"
 )
 
+// RiskTier classifies a sufficient aggregate risk score.
 type RiskTier string
 
 const (
@@ -29,21 +32,36 @@ const (
 	RiskHigh         RiskTier = "high"
 )
 
+// FactorBreakdown explains one factor's knownness, weight, and score contribution.
 type FactorBreakdown struct {
-	Factor          RiskFactor `json:"factor"`
-	Known           bool       `json:"known"`
-	Value           *float64   `json:"value"`
-	Weight          float64    `json:"weight"`
-	EffectiveWeight float64    `json:"effectiveWeight"`
-	Contribution    float64    `json:"contribution"`
+	// Factor identifies the normalized input.
+	Factor RiskFactor `json:"factor"`
+	// Known reports whether Value was supplied.
+	Known bool `json:"known"`
+	// Value is nil for an unknown factor; known values are in [0,100].
+	Value *float64 `json:"value"`
+	// Weight is the factor's base weight from zero to one.
+	Weight float64 `json:"weight"`
+	// EffectiveWeight is base weight renormalized across known factors.
+	EffectiveWeight float64 `json:"effectiveWeight"`
+	// Contribution is Value multiplied by EffectiveWeight.
+	Contribution float64 `json:"contribution"`
 }
+
+// RiskResult is a versioned aggregate whose score is absent when evidence is insufficient.
 type RiskResult struct {
-	Version     string            `json:"version"`
-	Score       *float64          `json:"score"`
-	Tier        RiskTier          `json:"tier"`
-	Sufficient  bool              `json:"sufficient"`
-	KnownWeight float64           `json:"knownWeight"`
-	Breakdown   []FactorBreakdown `json:"breakdown"`
+	// Version identifies the scoring contract.
+	Version string `json:"version"`
+	// Score is nil until enough weighted inputs are known.
+	Score *float64 `json:"score"`
+	// Tier is insufficient when Score is nil.
+	Tier RiskTier `json:"tier"`
+	// Sufficient reports whether at least 70% base weight is known.
+	Sufficient bool `json:"sufficient"`
+	// KnownWeight is the known base-weight fraction from zero to one.
+	KnownWeight float64 `json:"knownWeight"`
+	// Breakdown makes the score and missing inputs auditable.
+	Breakdown []FactorBreakdown `json:"breakdown"`
 }
 
 // ScoreRisk accepts normalized risk values in [0,100], where larger is worse.

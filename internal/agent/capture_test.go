@@ -174,3 +174,25 @@ func TestSpoolIntegrityAndErrors(t *testing.T) {
 		t.Fatal("mutated immutable snapshot accepted")
 	}
 }
+
+func TestLoadRejectsOversizePayloadBeforeDecode(t *testing.T) {
+	r := repo(t)
+	write(t, r, "main.go", "package main")
+	s := capture(t, r)
+	dir := t.TempDir()
+	path := filepath.Join(dir, s.ID+".json")
+	f, e := os.Create(path)
+	if e != nil {
+		t.Fatal(e)
+	}
+	if e = f.Truncate(MaxSpoolPayloadBytes + 1); e != nil {
+		f.Close()
+		t.Fatal(e)
+	}
+	if e = f.Close(); e != nil {
+		t.Fatal(e)
+	}
+	if _, e = Load(dir, s.ID); e == nil {
+		t.Fatal("oversize spool payload accepted")
+	}
+}

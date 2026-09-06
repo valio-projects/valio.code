@@ -12,24 +12,42 @@ import (
 // BlobRef scopes content-addressed bytes to a workspace; digest equality never
 // grants another workspace access to the blob.
 type BlobRef struct {
+	// WorkspaceID scopes the digest to an access boundary.
 	WorkspaceID domain.WorkspaceID `json:"workspaceId"`
-	SHA256      string             `json:"sha256"`
+	// SHA256 is the lowercase hexadecimal content digest.
+	SHA256 string `json:"sha256"`
 }
+
+// SourceFile supplies repository-relative path and raw bytes for manifest construction.
 type SourceFile struct {
-	Path    string
+	// Path is a portable repository-relative path.
+	Path string
+	// Content is the exact byte content to hash.
 	Content []byte
 }
+
+// ManifestEntry binds a path to a scoped blob and its byte size.
 type ManifestEntry struct {
-	Path string  `json:"path"`
+	// Path is the repository-relative file path.
+	Path string `json:"path"`
+	// Blob identifies immutable file content.
 	Blob BlobRef `json:"blob"`
-	Size int     `json:"size"`
+	// Size is the file length in bytes.
+	Size int `json:"size"`
 }
+
+// Manifest is a deterministic repository input inventory split into hash shards.
 type Manifest struct {
-	WorkspaceID  domain.WorkspaceID  `json:"workspaceId"`
+	// WorkspaceID scopes all entries and the fingerprint.
+	WorkspaceID domain.WorkspaceID `json:"workspaceId"`
+	// RepositoryID identifies the repository represented.
 	RepositoryID domain.RepositoryID `json:"repositoryId"`
-	Entries      []ManifestEntry     `json:"entries"`
-	Shards       [256]string         `json:"shards"`
-	Fingerprint  string              `json:"fingerprint"`
+	// Entries contains files sorted by path.
+	Entries []ManifestEntry `json:"entries"`
+	// Shards contains fingerprints indexed by the first path-hash byte.
+	Shards [256]string `json:"shards"`
+	// Fingerprint identifies this complete workspace-scoped inventory.
+	Fingerprint string `json:"fingerprint"`
 }
 
 // BuildManifest sorts files and hashes each path/content pair into one of 256
@@ -42,6 +60,7 @@ func BuildManifest(workspace domain.WorkspaceID, repository domain.RepositoryID,
 	return builder.Build(files)
 }
 
+// Build validates files and returns a deterministic manifest without retaining file bytes.
 func (b *ManifestBuilder) Build(files []SourceFile) (Manifest, error) {
 	if b == nil {
 		return Manifest{}, fmt.Errorf("manifest builder is required")

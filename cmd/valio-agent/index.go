@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
+	"fmt"
 	"github.com/valio-projects/valio.code/internal/agent"
 	"io"
+	"os"
 	"path/filepath"
 	"time"
 )
@@ -38,25 +40,32 @@ func runIndex(ctx context.Context, args []string, out io.Writer) error {
 		if s.ID == last {
 			return nil
 		}
-		last = s.ID
 		if *output != "" {
 			if e := writeOutput(*output, s); e != nil {
 				return e
 			}
 		}
 		if upload.Enabled() {
-			return upload.Upload(ctx, s, out)
+			if e := upload.Upload(ctx, s, out); e != nil {
+				return e
+			}
+			last = s.ID
+			return nil
 		}
+		last = s.ID
 		if *output != "" {
 			return nil
 		}
 		return json.NewEncoder(out).Encode(s)
 	}
 	if e := capture(); e != nil {
-		return e
+		if args[0] != "watch" {
+			return e
+		}
+		fmt.Fprintln(os.Stderr, "watch:", e)
 	}
 	if args[0] == "index" {
 		return nil
 	}
-	return reconcileWatch(ctx, *interval, capture)
+	return reconcileWatch(ctx, *root, *interval, capture)
 }

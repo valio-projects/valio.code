@@ -5,6 +5,7 @@ import (
 	"reflect"
 )
 
+// Validate verifies descriptor identity, scope, member uniqueness, and evidence consistency.
 func (t TypeDescriptor) Validate() error {
 	if t.ID == "" {
 		return fmt.Errorf("type descriptor requires identity")

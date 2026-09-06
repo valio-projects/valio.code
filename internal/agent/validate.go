@@ -13,6 +13,7 @@ import (
 )
 
 var projectedKey = regexp.MustCompile(`^[A-Za-z_][A-Za-z0-9_.\[\]-]*$`)
+var credentialURL = regexp.MustCompile(`(?i)(?:https?|postgres(?:ql)?|mysql|mongodb(?:\+srv)?|redis)://[^\s/@:]+:[^\s/@]+@`)
 var diagnosticMessages = map[string]string{
 	"unsafe-path":             "path leaves repository root",
 	"unreadable":              "file missing or unreadable",
@@ -30,6 +31,9 @@ var diagnosticMessages = map[string]string{
 func ValidateSnapshot(s Snapshot) error {
 	invalid := func() error { return errors.New("invalid or unsafe snapshot payload") }
 	if s.Version != 1 {
+		return invalid()
+	}
+	if !validateRepositoryMetadata(s.Repository) {
 		return invalid()
 	}
 	seen := map[string]bool{}
@@ -78,7 +82,7 @@ func ValidateSnapshot(s Snapshot) error {
 	return nil
 }
 func safeRelativePath(p string) bool {
-	if p == "" || len(p) > 32768 || strings.ContainsAny(p, "\\\x00\r\n") || strings.Contains(p, ":") || strings.HasPrefix(p, "/") || path.Clean(p) != p || p == "." || p == ".." || strings.HasPrefix(p, "../") {
+	if p == "" || len(p) > 32768 || strings.ContainsAny(p, "\\\x00\r\n") || containsControl(p) || strings.Contains(p, ":") || strings.HasPrefix(p, "/") || path.Clean(p) != p || p == "." || p == ".." || strings.HasPrefix(p, "../") {
 		return false
 	}
 	return utf8.ValidString(p)

@@ -8,19 +8,36 @@ import (
 	"time"
 )
 
+// WorkspaceID identifies an isolated workspace.
 type WorkspaceID string
+
+// ProjectID identifies a project within a workspace.
 type ProjectID string
+
+// RepositoryID identifies a configured source repository.
 type RepositoryID string
+
+// WorktreeID identifies a local checkout of a repository.
 type WorktreeID string
+
+// RevisionID identifies an append-only project definition revision.
 type RevisionID string
+
+// SnapshotID identifies immutable repository or source inputs.
 type SnapshotID string
+
+// ViewID identifies an immutable analysis view.
 type ViewID string
 
+// Workspace is an identity and display name for an isolated collection of projects.
 type Workspace struct {
-	ID   WorkspaceID `json:"id"`
-	Name string      `json:"name"`
+	// ID is the stable workspace identity.
+	ID WorkspaceID `json:"id"`
+	// Name is the user-facing workspace name.
+	Name string `json:"name"`
 }
 
+// ProjectKind classifies the runtime purpose of a project.
 type ProjectKind string
 
 const (
@@ -30,23 +47,36 @@ const (
 	ProjectTool        ProjectKind = "tool"
 )
 
+// Valid reports whether k is a supported project classification.
 func (k ProjectKind) Valid() bool {
 	return k == ProjectService || k == ProjectLibrary || k == ProjectApplication || k == ProjectTool
 }
 
+// Project contains stable identity and editable definition metadata.
 type Project struct {
-	ID                  ProjectID     `json:"id"`
-	WorkspaceID         WorkspaceID   `json:"workspaceId"`
-	Key                 string        `json:"key"`
-	Name                string        `json:"name"`
-	Description         string        `json:"description"`
-	Kind                ProjectKind   `json:"kind"`
-	Tags                []string      `json:"tags"`
-	BuildProfiles       []string      `json:"buildProfiles"`
-	EnvironmentProfiles []string      `json:"environmentProfiles"`
-	Status              ProjectStatus `json:"status"`
+	// ID is the stable project identity.
+	ID ProjectID `json:"id"`
+	// WorkspaceID scopes the project identity and key.
+	WorkspaceID WorkspaceID `json:"workspaceId"`
+	// Key is an immutable workspace-unique slug.
+	Key string `json:"key"`
+	// Name is the editable display name.
+	Name string `json:"name"`
+	// Description is optional user-facing context.
+	Description string `json:"description"`
+	// Kind classifies the project.
+	Kind ProjectKind `json:"kind"`
+	// Tags are unique, trimmed labels.
+	Tags []string `json:"tags"`
+	// BuildProfiles names applicable build configurations.
+	BuildProfiles []string `json:"buildProfiles"`
+	// EnvironmentProfiles names applicable deployment configurations.
+	EnvironmentProfiles []string `json:"environmentProfiles"`
+	// Status controls whether the project is active or archived.
+	Status ProjectStatus `json:"status"`
 }
 
+// ProjectStatus records whether a project participates in normal work.
 type ProjectStatus string
 
 const (
@@ -68,6 +98,7 @@ func ValidateProjectKey(key string) error {
 	return nil
 }
 
+// Validate checks required project identity, classification, key, status, and set-like labels.
 func (p Project) Validate() error {
 	if p.ID == "" || p.WorkspaceID == "" || strings.TrimSpace(p.Name) == "" || !p.Kind.Valid() {
 		return fmt.Errorf("project requires identity, workspace, name and valid kind")
@@ -101,18 +132,28 @@ func (p Project) ValidateUpdate(previous Project) error {
 	return nil
 }
 
+// Repository identifies a workspace-scoped source remote.
 type Repository struct {
-	ID          RepositoryID `json:"id"`
-	WorkspaceID WorkspaceID  `json:"workspaceId"`
-	RemoteURL   string       `json:"remoteUrl"`
+	// ID is the stable repository identity.
+	ID RepositoryID `json:"id"`
+	// WorkspaceID scopes access to the repository.
+	WorkspaceID WorkspaceID `json:"workspaceId"`
+	// RemoteURL is the configured remote location.
+	RemoteURL string `json:"remoteUrl"`
 }
 
+// Worktree records a local checkout state; it is distinct from a repository.
 type Worktree struct {
-	ID           WorktreeID   `json:"id"`
+	// ID is the worktree identity.
+	ID WorktreeID `json:"id"`
+	// RepositoryID identifies the checkout's source repository.
 	RepositoryID RepositoryID `json:"repositoryId"`
-	LocalPath    string       `json:"localPath"`
-	HeadCommit   string       `json:"headCommit"`
-	Dirty        bool         `json:"dirty"`
+	// LocalPath is the machine-local checkout location.
+	LocalPath string `json:"localPath"`
+	// HeadCommit is the checked-out commit when known.
+	HeadCommit string `json:"headCommit"`
+	// Dirty reports uncommitted working-tree changes.
+	Dirty bool `json:"dirty"`
 }
 
 // ProjectSourceRoot relates a project to a repository. Roots may overlap across

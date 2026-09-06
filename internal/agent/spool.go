@@ -13,6 +13,11 @@ import (
 
 var snapshotID = regexp.MustCompile(`^[0-9a-f]{64}$`)
 
+// MaxSpoolPayloadBytes bounds one on-disk snapshot before JSON decoding. It is
+// a transport-resume safety limit, not a claim that a repository corpus cannot
+// be larger when captured or uploaded through another protocol.
+const MaxSpoolPayloadBytes int64 = 64 * 1024 * 1024
+
 // Save writes one complete sanitized payload using an atomic rename. Repeated
 // writes of the same immutable snapshot are idempotent; no raw source spool exists.
 func Save(dir string, s Snapshot) error {
@@ -103,7 +108,7 @@ func Load(dir, id string) (Snapshot, error) {
 	}
 	path := filepath.Join(dir, id+".json")
 	info, e := os.Lstat(path)
-	if e != nil || !info.Mode().IsRegular() {
+	if e != nil || !info.Mode().IsRegular() || info.Size() > MaxSpoolPayloadBytes {
 		return Snapshot{}, errors.New("invalid spool payload")
 	}
 	b, e := os.ReadFile(path)

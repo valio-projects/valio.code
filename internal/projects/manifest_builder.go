@@ -11,6 +11,7 @@ type ManifestBuilder struct {
 	repository domain.RepositoryID
 }
 
+// NewManifestBuilder creates a builder fixed to nonempty workspace and repository IDs.
 func NewManifestBuilder(workspace domain.WorkspaceID, repository domain.RepositoryID) (*ManifestBuilder, error) {
 	if workspace == "" || repository == "" {
 		return nil, fmt.Errorf("manifest builder requires workspace and repository")

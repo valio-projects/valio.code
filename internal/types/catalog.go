@@ -6,6 +6,7 @@ import (
 	"github.com/valio-projects/valio.code/internal/domain/typeinfo"
 )
 
+// Catalog is an immutable, validated collection of scoped type descriptors.
 type Catalog struct{ descriptors []typeinfo.TypeDescriptor }
 
 // ByName is a convenience entry point to the explicit query handler.
@@ -13,6 +14,7 @@ func (c *Catalog) ByName(scope QueryScope, name string) (NameResult, error) {
 	return NewByNameHandler(c).Handle(ByNameQuery{Scope: scope, Name: name})
 }
 
+// NewCatalog validates and deep-copies descriptors, rejecting duplicate scoped identities.
 func NewCatalog(descriptors []typeinfo.TypeDescriptor) (*Catalog, error) {
 	seen := map[typeinfo.SymbolIdentity]bool{}
 	for _, d := range descriptors {

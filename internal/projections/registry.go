@@ -9,6 +9,7 @@ import (
 	"sort"
 )
 
+// Family identifies one independently versioned projection contract.
 type Family string
 
 const (
@@ -24,6 +25,7 @@ const (
 	Context       Family = "context"
 )
 
+// Status describes a projection's build availability for a view.
 type Status string
 
 const (
@@ -38,6 +40,7 @@ const (
 	ExcludedByPolicy Status = "excluded_by_policy"
 )
 
+// Valid reports whether s is a recognized projection state.
 func (s Status) Valid() bool {
 	switch s {
 	case NotRequested, Queued, Building, Ready, Partial, Stale, Failed, Unsupported, ExcludedByPolicy:
@@ -46,15 +49,23 @@ func (s Status) Valid() bool {
 	return false
 }
 
+// Contract defines a projection family, its schema version, and prerequisites.
 type Contract struct {
-	Family       Family   `json:"family"`
-	Version      string   `json:"version"`
+	// Family identifies the produced projection.
+	Family Family `json:"family"`
+	// Version changes when this projection contract changes.
+	Version string `json:"version"`
+	// Dependencies must be built before this family.
 	Dependencies []Family `json:"dependencies"`
 }
+
+// Registry is the complete dependency graph of projection contracts.
 type Registry struct {
+	// Contracts contains each family exactly once.
 	Contracts []Contract `json:"contracts"`
 }
 
+// DefaultRegistry returns the built-in projection dependency graph.
 func DefaultRegistry() Registry {
 	return Registry{Contracts: []Contract{
 		{SourceText, "1", nil}, {Structure, "1", []Family{SourceText}},
@@ -67,7 +78,11 @@ func DefaultRegistry() Registry {
 		{Vector, "1", []Family{SystemGraph, Context}},
 	}}
 }
+
+// Validate rejects incomplete, duplicate, unknown, and cyclic dependencies.
 func (r Registry) Validate() error { _, err := r.TopologicalOrder(); return err }
+
+// TopologicalOrder returns dependencies before their consumers in deterministic order.
 func (r Registry) TopologicalOrder() ([]Family, error) {
 	contracts := map[Family]Contract{}
 	for _, c := range r.Contracts {
@@ -201,10 +216,14 @@ func (r Registry) Fingerprints(source string, profiles map[Family]string) (map[F
 }
 
 type Readiness struct {
-	Known     int            `json:"known"`
-	Requested int            `json:"requested"`
-	Ready     int            `json:"ready"`
-	Counts    map[Status]int `json:"counts"`
+	// Known is the number of registered families.
+	Known int `json:"known"`
+	// Requested is the number not in the not_requested state.
+	Requested int `json:"requested"`
+	// Ready is the number fully ready, excluding partial results.
+	Ready int `json:"ready"`
+	// Counts maps each state to its number of registered families.
+	Counts map[Status]int `json:"counts"`
 }
 
 // Readiness counts every registered family in Known; omitted state is explicitly

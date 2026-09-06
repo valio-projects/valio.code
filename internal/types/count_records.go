@@ -5,6 +5,7 @@ import (
 	"reflect"
 )
 
+// Counts totals recorded descriptor metadata; zero never proves an absent semantic feature.
 func Counts(d typeinfo.TypeDescriptor) MemberCounts {
 	c := MemberCounts{Fields: len(d.Fields), Properties: len(d.Properties), Methods: len(d.Methods), Constructors: len(d.Constructors), GenericParameters: len(d.GenericParameters), Attributes: len(d.Attributes), Constants: len(d.Constants)}
 	for _, g := range d.GenericParameters {

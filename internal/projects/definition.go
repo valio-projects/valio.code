@@ -14,9 +14,12 @@ import (
 	"github.com/valio-projects/valio.code/internal/domain"
 )
 
+// Definition combines a project identity with its source-root membership rules.
 type Definition struct {
-	Project domain.Project             `json:"project"`
-	Roots   []domain.ProjectSourceRoot `json:"roots"`
+	// Project supplies stable identity and display metadata.
+	Project domain.Project `json:"project"`
+	// Roots selects repository paths that contribute to the project.
+	Roots []domain.ProjectSourceRoot `json:"roots"`
 }
 
 // Globs are anchored to the source root. Each component supports path.Match
@@ -42,6 +45,7 @@ func ValidateGlob(pattern string) error {
 	return nil
 }
 
+// Validate checks the project and every root and glob expression.
 func (d Definition) Validate() error {
 	if err := d.Project.Validate(); err != nil {
 		return err
@@ -91,9 +95,12 @@ func matchGlob(pattern, relative string) bool {
 	return match(0, 0)
 }
 
+// FileRef identifies a file in a repository independently of a worktree path.
 type FileRef struct {
+	// RepositoryID identifies the owning repository.
 	RepositoryID domain.RepositoryID `json:"repositoryId"`
-	Path         string              `json:"path"`
+	// Path is the portable repository-relative path.
+	Path string `json:"path"`
 }
 
 func contains(d Definition, file FileRef) bool {
@@ -198,6 +205,8 @@ func sortedUnique(values []string) []string {
 	}
 	return out
 }
+
+// DefinitionFingerprint returns a deterministic SHA-256 identity for valid normalized rules.
 func DefinitionFingerprint(d Definition) (string, error) {
 	if err := d.Validate(); err != nil {
 		return "", err
@@ -223,6 +232,7 @@ func DefinitionFingerprint(d Definition) (string, error) {
 
 // ProfileFingerprint includes exact analyzer versions/configuration. The map
 // encoding is canonical because encoding/json sorts string map keys.
+// ProfileFingerprint returns a deterministic identity for analyzer versions and configuration.
 func ProfileFingerprint(versions, configuration map[string]string) string {
 	return digest(struct {
 		Version                  string

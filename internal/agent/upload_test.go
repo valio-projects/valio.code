@@ -128,3 +128,27 @@ func TestRehashedUnsafeSnapshotsRejected(t *testing.T) {
 		}
 	}
 }
+
+func TestRehashedUnsafeRepositoryMetadataRejected(t *testing.T) {
+	r := repo(t)
+	write(t, r, "main.go", "package main\n")
+	original := capture(t, r)
+	for _, mutate := range []func(*Snapshot){
+		func(s *Snapshot) { s.Repository.Root = "https://user:credential@example.com/repository" },
+		func(s *Snapshot) { s.Repository.GitDir = "C:\\repo\r\\.git" },
+		func(s *Snapshot) { s.Repository.Head = strings.Repeat("a", 39) },
+		func(s *Snapshot) { s.Repository.Branch = "main..forged" },
+		func(s *Snapshot) { s.Repository.Refs = []string{"refs/heads/main", "refs/heads/../forged"} },
+		func(s *Snapshot) { s.Repository.Worktrees[0].Path = "/repo\x00forged" },
+		func(s *Snapshot) { s.Repository.Status[0].Path = "dir/../forged.go" },
+	} {
+		data, _ := json.Marshal(original)
+		var changed Snapshot
+		json.Unmarshal(data, &changed)
+		mutate(&changed)
+		reidentify(&changed)
+		if ValidateSnapshot(changed) == nil || Save(t.TempDir(), changed) == nil {
+			t.Fatal("rehashing bypassed repository metadata validation")
+		}
+	}
+}

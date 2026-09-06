@@ -9,6 +9,7 @@ import (
 // ByNameHandler serves a pure read query against a validated immutable catalog.
 type ByNameHandler struct{ catalog *Catalog }
 
+// NewByNameHandler creates a handler over catalog; a nil catalog is rejected by Handle.
 func NewByNameHandler(catalog *Catalog) *ByNameHandler { return &ByNameHandler{catalog: catalog} }
 
 // Handle performs exact, case-sensitive matching and preserves ambiguity.
