@@ -3,6 +3,9 @@
 .env
 .env.*
 !.env.example
+**/.env
+**/.env.*
+!**/.env.example
 **/node_modules
 **/dist
 **/coverage
@@ -11,8 +14,14 @@ data
 backups
 spool
 .runtime
+.valio
 *.log
 *.pem
 *.key
+**/*.pem
+**/*.key
+**/*.pfx
+**/*.p12
+**/*.log
 .idea
 .vscode

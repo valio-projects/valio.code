@@ -614,6 +614,9 @@
               "null"
             ]
           },
+          "rangesTruncated": {
+            "type": "boolean"
+          },
           "repositoryId": {
             "type": "string"
           },

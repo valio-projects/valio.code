@@ -14,10 +14,13 @@
 /backups/
 /spool/
 /.runtime/
+/.valio/
 *.scip
 !testdata/**/*.scip
 *.pem
 *.key
+*.pfx
+*.p12
 .idea/
 .vscode/
 .DS_Store

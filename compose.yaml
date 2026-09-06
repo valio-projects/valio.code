@@ -1,5 +1,111 @@
 name: valio-code
 services:
+  migrate:
+    build:
+      context: .
+      target: migrate
+    environment:
+      VALIO_DB_URL: http://surrealdb:8000
+      VALIO_DB_NAMESPACE: valio
+      VALIO_DB_DATABASE: workspace_main
+      VALIO_DB_USER: root
+      VALIO_DB_PASSWORD: ${SURREAL_ROOT_PASSWORD:?Run scripts/setup.ps1 first}
+      VALIO_DB_AUTH_LEVEL: root
+      VALIO_API_DB_PASSWORD: ${VALIO_API_DB_PASSWORD:?Run scripts/setup.ps1 first}
+      VALIO_WORKER_DB_PASSWORD: ${VALIO_WORKER_DB_PASSWORD:?Run scripts/setup.ps1 first}
+    depends_on:
+      surrealdb:
+        condition: service_healthy
+    networks: [backend]
+    restart: "no"
+    read_only: true
+    tmpfs: [/tmp]
+  api:
+    build:
+      context: .
+      target: api
+    environment:
+      VALIO_DB_URL: http://surrealdb:8000
+      VALIO_DB_NAMESPACE: valio
+      VALIO_DB_DATABASE: workspace_main
+      VALIO_DB_USER: valio_api
+      VALIO_DB_PASSWORD: ${VALIO_API_DB_PASSWORD:?Run scripts/setup.ps1 first}
+      VALIO_API_TOKEN: ${VALIO_API_TOKEN:?Run scripts/setup.ps1 first}
+      VALIO_WORKSPACE_ID: workspace-main
+      VALIO_API_ADDRESS: "0.0.0.0:8090"
+      VALIO_TRUSTED_ORIGINS: "http://127.0.0.1:8080,http://localhost:8080"
+      OTEL_SERVICE_NAME: valio-api
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      jaeger:
+        condition: service_started
+    networks: [backend]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 1G
+  worker:
+    build:
+      context: .
+      target: worker
+    environment:
+      VALIO_DB_URL: http://surrealdb:8000
+      VALIO_DB_NAMESPACE: valio
+      VALIO_DB_DATABASE: workspace_main
+      VALIO_DB_USER: valio_worker
+      VALIO_DB_PASSWORD: ${VALIO_WORKER_DB_PASSWORD:?Run scripts/setup.ps1 first}
+      OTEL_SERVICE_NAME: valio-worker
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      jaeger:
+        condition: service_started
+    networks: [backend]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    deploy:
+      resources:
+        limits:
+          cpus: "2"
+          memory: 1G
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    ports: ["127.0.0.1:8080:8080"]
+    depends_on:
+      api:
+        condition: service_healthy
+    networks: [backend, ingress]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp, /var/cache/nginx, /var/run]
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 256M
+  jaeger:
+    image: cr.jaegertracing.io/jaegertracing/jaeger:2.20.0@sha256:46a886260e04002d8f45e213fc39063fa11a50446048fdaa64786fc0840cb9f8
+    user: "65532:65532"
+    ports: ["127.0.0.1:16686:16686"]
+    networks: [backend, ingress]
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 512M
   volume-init:
     image: alpine:3.23.0@sha256:51183f2cfa6320055da30872f211093f9ff1d3cf06f39a0bdb212314c5dc7375
     user: "0:0"
@@ -33,6 +139,7 @@ services:
           cpus: "4"
           memory: 4G
 networks:
+  ingress:
   backend:
     internal: true
 volumes:

@@ -1,5 +1,7 @@
 # Only integration tests publish the database, on loopback and an alternate port.
 services:
+  jaeger:
+    ports: ["127.0.0.1:14318:4318"]
   surrealdb:
     ports: ["127.0.0.1:18000:8000"]
 networks:
