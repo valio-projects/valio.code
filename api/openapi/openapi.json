@@ -1,0 +1,3915 @@
+{
+  "components": {
+    "schemas": {
+      "Error": {
+        "properties": {
+          "error": {
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "requestId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "agent.Diagnostic": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "agent.File": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "hash": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "agent.Snapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "config": {
+            "items": {
+              "$ref": "#/components/schemas/configgraph.Projection"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "diagnostics": {
+            "items": {
+              "$ref": "#/components/schemas/agent.Diagnostic"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/agent.File"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "repository": {
+            "$ref": "#/components/schemas/git.Repository"
+          },
+          "version": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "configgraph.Key": {
+        "additionalProperties": false,
+        "properties": {
+          "line": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "configgraph.Projection": {
+        "additionalProperties": false,
+        "properties": {
+          "keys": {
+            "items": {
+              "$ref": "#/components/schemas/configgraph.Key"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "kind": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "domain.Position": {
+        "additionalProperties": false,
+        "properties": {
+          "character": {
+            "type": "integer"
+          },
+          "line": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "domain.Project": {
+        "additionalProperties": false,
+        "properties": {
+          "buildProfiles": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "description": {
+            "type": "string"
+          },
+          "environmentProfiles": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "key": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "workspaceId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "domain.ProjectRevisionRef": {
+        "additionalProperties": false,
+        "properties": {
+          "projectId": {
+            "type": "string"
+          },
+          "projectRevisionId": {
+            "type": "string"
+          },
+          "workspaceId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "domain.ProjectSourceRoot": {
+        "additionalProperties": false,
+        "properties": {
+          "buildUnit": {
+            "type": "string"
+          },
+          "exclude": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "include": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "path": {
+            "type": "string"
+          },
+          "repositoryId": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "domain.Repository": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "remoteUrl": {
+            "type": "string"
+          },
+          "workspaceId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "domain.RepositorySnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "commit": {
+            "type": "string"
+          },
+          "manifestFingerprint": {
+            "type": "string"
+          },
+          "repositoryId": {
+            "type": "string"
+          },
+          "snapshotId": {
+            "type": "string"
+          },
+          "workspaceId": {
+            "type": "string"
+          },
+          "worktreeId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "domain.SourceRange": {
+        "additionalProperties": false,
+        "properties": {
+          "encoding": {
+            "type": "string"
+          },
+          "end": {
+            "$ref": "#/components/schemas/domain.Position"
+          },
+          "path": {
+            "type": "string"
+          },
+          "repositoryId": {
+            "type": "string"
+          },
+          "start": {
+            "$ref": "#/components/schemas/domain.Position"
+          }
+        },
+        "type": "object"
+      },
+      "domain.Workspace": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "git.Repository": {
+        "additionalProperties": false,
+        "properties": {
+          "branch": {
+            "type": "string"
+          },
+          "commonDir": {
+            "type": "string"
+          },
+          "dirty": {
+            "type": "boolean"
+          },
+          "gitDir": {
+            "type": "string"
+          },
+          "head": {
+            "type": "string"
+          },
+          "refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "root": {
+            "type": "string"
+          },
+          "status": {
+            "items": {
+              "$ref": "#/components/schemas/git.Status"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "worktrees": {
+            "items": {
+              "$ref": "#/components/schemas/git.Worktree"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "git.Status": {
+        "additionalProperties": false,
+        "properties": {
+          "index": {
+            "type": "string"
+          },
+          "originalPath": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "worktree": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "git.Worktree": {
+        "additionalProperties": false,
+        "properties": {
+          "bare": {
+            "type": "boolean"
+          },
+          "branch": {
+            "type": "string"
+          },
+          "detached": {
+            "type": "boolean"
+          },
+          "head": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "projects.Definition": {
+        "additionalProperties": false,
+        "properties": {
+          "project": {
+            "$ref": "#/components/schemas/domain.Project"
+          },
+          "roots": {
+            "items": {
+              "$ref": "#/components/schemas/domain.ProjectSourceRoot"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "queries.SearchQuery": {
+        "additionalProperties": false,
+        "properties": {
+          "caseSensitive": {
+            "type": "boolean"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "mode": {
+            "type": "string"
+          },
+          "offset": {
+            "type": "integer"
+          },
+          "query": {
+            "type": "string"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/queries.SearchScope"
+          }
+        },
+        "type": "object"
+      },
+      "queries.SearchResult": {
+        "additionalProperties": false,
+        "properties": {
+          "complete": {
+            "type": "boolean"
+          },
+          "matches": {
+            "items": {
+              "$ref": "#/components/schemas/search.Match"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "scannedBytes": {
+            "type": "integer"
+          },
+          "scannedFiles": {
+            "type": "integer"
+          },
+          "total": {
+            "type": "integer"
+          },
+          "truncated": {
+            "type": "boolean"
+          },
+          "viewId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "queries.SearchScope": {
+        "additionalProperties": false,
+        "properties": {
+          "projectIds": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "viewId": {
+            "type": "string"
+          },
+          "workspaceId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "queries.TypeResult": {
+        "additionalProperties": false,
+        "properties": {
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/types.Candidate"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "reference": {
+            "$ref": "#/components/schemas/typeinfo.SymbolReference"
+          },
+          "status": {
+            "type": "string"
+          },
+          "viewId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "search.File": {
+        "additionalProperties": false,
+        "properties": {
+          "content": {
+            "type": "string"
+          },
+          "generated": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "projectIds": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "repositoryId": {
+            "type": "string"
+          },
+          "snapshotId": {
+            "type": "string"
+          },
+          "symbols": {
+            "items": {
+              "$ref": "#/components/schemas/search.Symbol"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "test": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "search.Match": {
+        "additionalProperties": false,
+        "properties": {
+          "fileId": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "projectIds": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "ranges": {
+            "items": {
+              "$ref": "#/components/schemas/search.Range"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "repositoryId": {
+            "type": "string"
+          },
+          "snapshotId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "search.Range": {
+        "additionalProperties": false,
+        "properties": {
+          "end": {
+            "type": "integer"
+          },
+          "start": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "search.Symbol": {
+        "additionalProperties": false,
+        "properties": {
+          "end": {
+            "type": "integer"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "start": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "snapshots.FileRef": {
+        "additionalProperties": false,
+        "properties": {
+          "blobId": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "projectIds": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "repositoryId": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "snapshotId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "snapshots.IngestCommand": {
+        "additionalProperties": false,
+        "properties": {
+          "repositoryId": {
+            "type": "string"
+          },
+          "snapshot": {
+            "$ref": "#/components/schemas/agent.Snapshot"
+          },
+          "workspaceId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "snapshots.IngestResult": {
+        "additionalProperties": false,
+        "properties": {
+          "snapshotId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "viewId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "snapshots.View": {
+        "additionalProperties": false,
+        "properties": {
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/snapshots.FileRef"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "mixed": {
+            "type": "boolean"
+          },
+          "profile": {
+            "type": "string"
+          },
+          "projectRevisions": {
+            "items": {
+              "$ref": "#/components/schemas/domain.ProjectRevisionRef"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "projections": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "projects": {
+            "items": {
+              "$ref": "#/components/schemas/projects.Definition"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "repositories": {
+            "items": {
+              "$ref": "#/components/schemas/domain.RepositorySnapshot"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "snapshotId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "workspaceId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.ArrayDimension": {
+        "additionalProperties": false,
+        "properties": {
+          "length": {
+            "$ref": "#/components/schemas/typeinfo.Fact_uint64_"
+          },
+          "lowerBound": {
+            "$ref": "#/components/schemas/typeinfo.Fact_int64_"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.ArrayShape": {
+        "additionalProperties": false,
+        "properties": {
+          "dimensions": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.ArrayDimension"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "elementType": {
+            "$ref": "#/components/schemas/typeinfo.TypeReference"
+          },
+          "rank": {
+            "$ref": "#/components/schemas/typeinfo.Fact_int_"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.AttributeUse": {
+        "additionalProperties": false,
+        "properties": {
+          "attributeClass": {
+            "$ref": "#/components/schemas/typeinfo.SymbolReference"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "namedArguments": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.NamedAttributeArgument"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "occurrence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/typeinfo.OccurrenceLink"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "positionalArguments": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.AttributeValue"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.AttributeValue": {
+        "additionalProperties": false,
+        "properties": {
+          "expression": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "literal": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "redactionReason": {
+            "type": "string"
+          },
+          "type": {
+            "$ref": "#/components/schemas/typeinfo.TypeReference"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.ConstantValue": {
+        "additionalProperties": false,
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/typeinfo.TypeReference"
+          },
+          "value": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.EnumDescriptor": {
+        "additionalProperties": false,
+        "properties": {
+          "members": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.EnumMember"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "underlyingType": {
+            "$ref": "#/components/schemas/typeinfo.TypeReference"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.EnumMember": {
+        "additionalProperties": false,
+        "properties": {
+          "attributes": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.AttributeUse"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "declaration": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/typeinfo.OccurrenceLink"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "expression": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "groupId": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "occurrences": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.OccurrenceLink"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "value": {
+            "$ref": "#/components/schemas/typeinfo.ConstantValue"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.EvidenceRef": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "producer": {
+            "type": "string"
+          },
+          "range": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/domain.SourceRange"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.Fact___github.com_valio-projects_valio.code_internal_domain_typeinfo.Modifier_": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.EvidenceRef"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/typeinfo.TypeScope"
+          },
+          "status": {
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": [
+                  "array",
+                  "null"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.Fact_github.com_valio-projects_valio.code_internal_domain_typeinfo.LayoutKind_": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.EvidenceRef"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/typeinfo.TypeScope"
+          },
+          "status": {
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.Fact_github.com_valio-projects_valio.code_internal_domain_typeinfo.TypeKind_": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.EvidenceRef"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/typeinfo.TypeScope"
+          },
+          "status": {
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.Fact_github.com_valio-projects_valio.code_internal_domain_typeinfo.Visibility_": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.EvidenceRef"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/typeinfo.TypeScope"
+          },
+          "status": {
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.Fact_int64_": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.EvidenceRef"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/typeinfo.TypeScope"
+          },
+          "status": {
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.Fact_int_": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.EvidenceRef"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/typeinfo.TypeScope"
+          },
+          "status": {
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.Fact_string_": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.EvidenceRef"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/typeinfo.TypeScope"
+          },
+          "status": {
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.Fact_uint64_": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.EvidenceRef"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/typeinfo.TypeScope"
+          },
+          "status": {
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.FieldDescriptor": {
+        "additionalProperties": false,
+        "properties": {
+          "attributes": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.AttributeUse"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "declaration": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/typeinfo.OccurrenceLink"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "modifiers": {
+            "$ref": "#/components/schemas/typeinfo.Fact___github.com_valio-projects_valio.code_internal_domain_typeinfo.Modifier_"
+          },
+          "name": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "tag": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "type": {
+            "$ref": "#/components/schemas/typeinfo.TypeReference"
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/typeinfo.Fact_github.com_valio-projects_valio.code_internal_domain_typeinfo.Visibility_"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.FieldLayout": {
+        "additionalProperties": false,
+        "properties": {
+          "bitOffset": {
+            "$ref": "#/components/schemas/typeinfo.Fact_uint64_"
+          },
+          "bitWidth": {
+            "$ref": "#/components/schemas/typeinfo.Fact_uint64_"
+          },
+          "fieldId": {
+            "type": "string"
+          },
+          "offsetBytes": {
+            "$ref": "#/components/schemas/typeinfo.Fact_uint64_"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.GenericParameter": {
+        "additionalProperties": false,
+        "properties": {
+          "attributes": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.AttributeUse"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "constraints": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.TypeReference"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.MethodDescriptor": {
+        "additionalProperties": false,
+        "properties": {
+          "attributes": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.AttributeUse"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "declaration": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/typeinfo.OccurrenceLink"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "genericParameters": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.GenericParameter"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "modifiers": {
+            "$ref": "#/components/schemas/typeinfo.Fact___github.com_valio-projects_valio.code_internal_domain_typeinfo.Modifier_"
+          },
+          "name": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "parameters": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.ParameterDescriptor"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "receiver": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/typeinfo.ParameterDescriptor"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "returns": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.ReturnDescriptor"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "signature": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/typeinfo.Fact_github.com_valio-projects_valio.code_internal_domain_typeinfo.Visibility_"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.NamedAttributeArgument": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "value": {
+            "$ref": "#/components/schemas/typeinfo.AttributeValue"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.OccurrenceLink": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "range": {
+            "$ref": "#/components/schemas/domain.SourceRange"
+          },
+          "role": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "symbol": {
+            "$ref": "#/components/schemas/typeinfo.SymbolReference"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.ParameterDescriptor": {
+        "additionalProperties": false,
+        "properties": {
+          "attributes": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.AttributeUse"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "defaultValue": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "id": {
+            "type": "string"
+          },
+          "modifiers": {
+            "$ref": "#/components/schemas/typeinfo.Fact___github.com_valio-projects_valio.code_internal_domain_typeinfo.Modifier_"
+          },
+          "name": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "position": {
+            "$ref": "#/components/schemas/typeinfo.Fact_int_"
+          },
+          "type": {
+            "$ref": "#/components/schemas/typeinfo.TypeReference"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.PropertyDescriptor": {
+        "additionalProperties": false,
+        "properties": {
+          "attributes": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.AttributeUse"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "declaration": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/typeinfo.OccurrenceLink"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "getter": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/typeinfo.MethodDescriptor"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "modifiers": {
+            "$ref": "#/components/schemas/typeinfo.Fact___github.com_valio-projects_valio.code_internal_domain_typeinfo.Modifier_"
+          },
+          "name": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "parameters": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.ParameterDescriptor"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "setter": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/typeinfo.MethodDescriptor"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "type": {
+            "$ref": "#/components/schemas/typeinfo.TypeReference"
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/typeinfo.Fact_github.com_valio-projects_valio.code_internal_domain_typeinfo.Visibility_"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.ReturnDescriptor": {
+        "additionalProperties": false,
+        "properties": {
+          "attributes": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.AttributeUse"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "position": {
+            "$ref": "#/components/schemas/typeinfo.Fact_int_"
+          },
+          "type": {
+            "$ref": "#/components/schemas/typeinfo.TypeReference"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.SymbolIdentity": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/typeinfo.TypeScope"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.SymbolReference": {
+        "additionalProperties": false,
+        "properties": {
+          "candidates": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.SymbolIdentity"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "exact": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/typeinfo.SymbolIdentity"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "resolution": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.TypeDescriptor": {
+        "additionalProperties": false,
+        "properties": {
+          "array": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/typeinfo.ArrayShape"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "attributes": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.AttributeUse"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "constants": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.EnumMember"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "constructors": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.MethodDescriptor"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "declaration": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/typeinfo.OccurrenceLink"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "embeddedTypes": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.TypeReference"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "enum": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/typeinfo.EnumDescriptor"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.FieldDescriptor"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "fullyQualifiedName": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "genericParameters": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.GenericParameter"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/typeinfo.Fact_github.com_valio-projects_valio.code_internal_domain_typeinfo.TypeKind_"
+          },
+          "language": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "layout": {
+            "$ref": "#/components/schemas/typeinfo.TypeLayout"
+          },
+          "methods": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.MethodDescriptor"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "modifiers": {
+            "$ref": "#/components/schemas/typeinfo.Fact___github.com_valio-projects_valio.code_internal_domain_typeinfo.Modifier_"
+          },
+          "name": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "properties": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.PropertyDescriptor"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "scope": {
+            "$ref": "#/components/schemas/typeinfo.TypeScope"
+          },
+          "symbol": {
+            "$ref": "#/components/schemas/typeinfo.SymbolReference"
+          },
+          "underlyingType": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/typeinfo.TypeReference"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "visibility": {
+            "$ref": "#/components/schemas/typeinfo.Fact_github.com_valio-projects_valio.code_internal_domain_typeinfo.Visibility_"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.TypeLayout": {
+        "additionalProperties": false,
+        "properties": {
+          "abi": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "alignmentBytes": {
+            "$ref": "#/components/schemas/typeinfo.Fact_uint64_"
+          },
+          "compiler": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "compilerVersion": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "fields": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.FieldLayout"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "kind": {
+            "$ref": "#/components/schemas/typeinfo.Fact_github.com_valio-projects_valio.code_internal_domain_typeinfo.LayoutKind_"
+          },
+          "packingBytes": {
+            "$ref": "#/components/schemas/typeinfo.Fact_uint64_"
+          },
+          "sizeBytes": {
+            "$ref": "#/components/schemas/typeinfo.Fact_uint64_"
+          },
+          "targetArchitecture": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "unknownReasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.TypeReference": {
+        "additionalProperties": false,
+        "properties": {
+          "array": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/typeinfo.ArrayShape"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "attributes": {
+            "items": {
+              "$ref": "#/components/schemas/typeinfo.AttributeUse"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "name": {
+            "$ref": "#/components/schemas/typeinfo.Fact_string_"
+          },
+          "symbol": {
+            "$ref": "#/components/schemas/typeinfo.SymbolReference"
+          }
+        },
+        "type": "object"
+      },
+      "typeinfo.TypeScope": {
+        "additionalProperties": false,
+        "properties": {
+          "buildProfileId": {
+            "type": "string"
+          },
+          "projectId": {
+            "type": "string"
+          },
+          "versionId": {
+            "type": "string"
+          },
+          "workspaceId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "types.Candidate": {
+        "additionalProperties": false,
+        "properties": {
+          "counts": {
+            "$ref": "#/components/schemas/types.MemberCounts"
+          },
+          "reference": {
+            "$ref": "#/components/schemas/typeinfo.SymbolReference"
+          },
+          "type": {
+            "$ref": "#/components/schemas/typeinfo.TypeDescriptor"
+          }
+        },
+        "type": "object"
+      },
+      "types.MemberCounts": {
+        "additionalProperties": false,
+        "properties": {
+          "attributes": {
+            "type": "integer"
+          },
+          "constants": {
+            "type": "integer"
+          },
+          "constructors": {
+            "type": "integer"
+          },
+          "enumMembers": {
+            "type": "integer"
+          },
+          "fields": {
+            "type": "integer"
+          },
+          "genericParameters": {
+            "type": "integer"
+          },
+          "methods": {
+            "type": "integer"
+          },
+          "occurrences": {
+            "type": "integer"
+          },
+          "parameters": {
+            "type": "integer"
+          },
+          "properties": {
+            "type": "integer"
+          },
+          "returns": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "scheme": "bearer",
+        "type": "http"
+      },
+      "cookieAuth": {
+        "in": "cookie",
+        "name": "valio_session",
+        "type": "apiKey"
+      }
+    }
+  },
+  "info": {
+    "description": "One database-bound workspace. Cookie mutations require a trusted Origin. Go type evidence is syntax-only under buildProfileId syntax-default. Latest view resolves once; pin returned viewId for subsequent requests. Maximum JSON body and scanned source are each 16 MiB; maximum 10,000 files. Project/repository IDs are explicitly registered before ingestion. Unsupported projections report unsupported. MCP is separately mounted at /mcp with bearer authentication.",
+    "title": "valio.code local bootstrap API",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/capabilities": {
+      "get": {
+        "operationId": "getCapabilities",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "authentication": {
+                      "type": "string"
+                    },
+                    "buildProfileId": {
+                      "type": "string"
+                    },
+                    "features": {
+                      "items": {
+                        "properties": {
+                          "name": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "type": "array"
+                    },
+                    "limits": {
+                      "additionalProperties": {
+                        "type": "integer"
+                      },
+                      "type": "object"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      }
+    },
+    "/api/v1/files/{id}": {
+      "get": {
+        "operationId": "getSourceFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "viewId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/search.File"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      }
+    },
+    "/api/v1/ingestion": {
+      "post": {
+        "operationId": "ingestSnapshot",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/snapshots.IngestCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/snapshots.IngestResult"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      }
+    },
+    "/api/v1/projects": {
+      "get": {
+        "operationId": "listProjects",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/components/schemas/projects.Definition"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createProject",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/projects.Definition"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/projects.Definition"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      }
+    },
+    "/api/v1/projects/{id}": {
+      "get": {
+        "operationId": "getProject",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/projects.Definition"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      },
+      "put": {
+        "operationId": "updateProject",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/projects.Definition"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/projects.Definition"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      }
+    },
+    "/api/v1/repositories": {
+      "get": {
+        "operationId": "listRepositories",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/components/schemas/domain.Repository"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      },
+      "post": {
+        "operationId": "registerRepository",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/domain.Repository"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/domain.Repository"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      }
+    },
+    "/api/v1/search": {
+      "post": {
+        "operationId": "searchCode",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/queries.SearchQuery"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/queries.SearchResult"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      }
+    },
+    "/api/v1/session": {
+      "delete": {
+        "operationId": "deleteSession",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createSession",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "Origin",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "token": {
+                    "minLength": 32,
+                    "type": "string",
+                    "writeOnly": true
+                  }
+                },
+                "required": [
+                  "token"
+                ],
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/types": {
+      "get": {
+        "operationId": "queryTypes",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "viewId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "projectId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "buildProfileId",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/queries.TypeResult"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      }
+    },
+    "/api/v1/views": {
+      "get": {
+        "operationId": "getLatestView",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/snapshots.View"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      }
+    },
+    "/api/v1/views/{id}": {
+      "get": {
+        "operationId": "getView",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/snapshots.View"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      }
+    },
+    "/api/v1/workspace": {
+      "get": {
+        "operationId": "getWorkspace",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/domain.Workspace"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      }
+    },
+    "/healthz": {
+      "get": {
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        },
+        "security": []
+      }
+    },
+    "/readyz": {
+      "get": {
+        "operationId": "ready",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        },
+        "security": []
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    },
+    {
+      "cookieAuth": []
+    }
+  ],
+  "servers": [
+    {
+      "url": "http://127.0.0.1:8090"
+    }
+  ]
+}
