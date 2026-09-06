@@ -66,3 +66,13 @@ stages can be committed without including unfinished changes from another agent.
 Every backlog feature must specify input entities, output facts/projections, dependencies,
 invalidation unit, edge cases, independent fixtures, partial-result diagnostics and cost/
 quality measurements. No v1 completion or performance claim is made by this document.
+
+## Completed increments
+
+- `44b190e`: Compose SurrealDB 3.2.4, schema provisioning, database isolation and fenced
+  durable queue. Real container integration tests passed.
+- Agent/search increment: Git-safe capture, mandatory configuration projection, atomic
+  spool, HTTPS upload, validation on reloaded bundles; verified boolean text search and
+  modular Go AST/compiler provider. Focused tests and vet passed on Windows; the initial
+  Docker build/test target also passed on Linux. Watch polling is still the baseline at
+  this increment. Five-language compiler coverage and production search scale remain open.
