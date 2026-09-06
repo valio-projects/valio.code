@@ -18,44 +18,75 @@ import (
 	gitrepo "github.com/valio-projects/valio.code/internal/git"
 )
 
+// DefaultMaxFileBytes is the largest source file retained as content: 2 MiB.
 const DefaultMaxFileBytes int64 = 2 * 1024 * 1024
 
+// Options configures one local repository capture.
 type Options struct {
-	Root         string
-	SpoolDir     string
+	// Root is the repository worktree to discover.
+	Root string
+	// SpoolDir optionally persists the validated snapshot.
+	SpoolDir string
+	// MaxFileBytes bounds a source file; values above the default are clamped.
 	MaxFileBytes int64
 }
+
+// File is a sanitized source file retained in a snapshot.
 type File struct {
-	Path     string `json:"path"`
-	Hash     string `json:"hash"`
-	Size     int    `json:"size"`
+	// Path is a repository-relative path.
+	Path string `json:"path"`
+	// Hash is the SHA-256 digest of Content.
+	Hash string `json:"hash"`
+	// Size is the content length in bytes.
+	Size int `json:"size"`
+	// Language is an extension-derived classification.
 	Language string `json:"language"`
-	Content  string `json:"content"`
+	// Content passed all capture policy checks.
+	Content string `json:"content"`
 }
+
+// Diagnostic records a safe reason for an excluded path.
 type Diagnostic struct {
-	Path    string `json:"path,omitempty"`
-	Code    string `json:"code"`
+	// Path is the affected repository-relative path when safe to report.
+	Path string `json:"path,omitempty"`
+	// Code is a stable capture-policy outcome.
+	Code string `json:"code"`
+	// Message is a fixed explanation without source contents.
 	Message string `json:"message"`
 }
+
+// Snapshot is a content-addressed, sanitized repository capture.
 type Snapshot struct {
-	Version     int                      `json:"version"`
-	ID          string                   `json:"id"`
-	Repository  gitrepo.Repository       `json:"repository"`
-	Files       []File                   `json:"files"`
-	Config      []configgraph.Projection `json:"config"`
-	Diagnostics []Diagnostic             `json:"diagnostics"`
+	// Version identifies the serialization contract.
+	Version int `json:"version"`
+	// ID hashes this snapshot with ID omitted.
+	ID string `json:"id"`
+	// Repository contains bounded Git metadata or an explicit unknown state.
+	Repository gitrepo.Repository `json:"repository"`
+	// Files contains accepted non-configuration files.
+	Files []File `json:"files"`
+	// Config contains key-only configuration projections.
+	Config []configgraph.Projection `json:"config"`
+	// Diagnostics explains exclusions without exposing content.
+	Diagnostics []Diagnostic `json:"diagnostics"`
 }
 
+// CaptureBuilder combines options with optional reading and persistence adapters.
 type CaptureBuilder struct {
+	// Options controls root, spool, and source-size budget.
 	Options Options
-	Reader  SourceReader
-	Writer  SnapshotWriter
+	// Reader optionally replaces filesystem reads after policy filtering.
+	Reader SourceReader
+	// Writer optionally receives the validated snapshot.
+	Writer SnapshotWriter
 }
 
+// Capture discovers opts.Root and returns a validated sanitized snapshot.
 func Capture(ctx context.Context, opts Options) (Snapshot, error) {
 	return (&CaptureBuilder{Options: opts}).Build(ctx)
 }
 
+// Build captures through configured adapters and never reads excluded paths.
 func (builder *CaptureBuilder) Build(ctx context.Context) (Snapshot, error) {
 	opts := builder.Options
 	repo, err := gitrepo.Discover(ctx, opts.Root)

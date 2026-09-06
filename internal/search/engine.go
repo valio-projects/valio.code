@@ -6,17 +6,24 @@ import (
 	"sort"
 )
 
+// Search parses input and evaluates it against source using request-local options.
 func Search(ctx context.Context, source Source, input string, o Options) (Result, error) {
 	return (Engine{Source: source, Options: o}).Search(ctx, input)
 }
 
+// Engine contains reusable search dependencies and defaults.
 type Engine struct {
-	Source       Source
-	Options      Options
-	Parser       QueryParser
+	// Source supplies stable file snapshots.
+	Source Source
+	// Options apply when callers use Engine methods.
+	Options Options
+	// Parser parses expressions; its zero value has the default query limit.
+	Parser QueryParser
+	// IndexBuilder creates conservative candidate indexes.
 	IndexBuilder IndexBuilder
 }
 
+// Search parses input then evaluates it through this engine.
 func (engine Engine) Search(ctx context.Context, input string) (Result, error) {
 	q, e := engine.Parser.Parse(input)
 	if e != nil {
@@ -30,6 +37,8 @@ func (engine Engine) Search(ctx context.Context, input string) (Result, error) {
 func Execute(ctx context.Context, source Source, q *Query, o Options) (Result, error) {
 	return (Engine{Source: source, Options: o}).Execute(ctx, q)
 }
+
+// Execute evaluates an already parsed query through this engine.
 func (engine Engine) Execute(ctx context.Context, q *Query) (Result, error) {
 	source, o := engine.Source, engine.Options
 	if source == nil {
@@ -105,7 +114,10 @@ func (engine Engine) Execute(ctx context.Context, q *Query) (Result, error) {
 		if !ok {
 			continue
 		}
-		matched = append(matched, Match{FileID: f.ID, Path: f.Path, RepositoryID: f.RepositoryID, SnapshotID: f.SnapshotID, ProjectIDs: projects, Ranges: canonicalRanges(ranges)})
+		if ranges.truncated {
+			r.Truncated = true
+		}
+		matched = append(matched, Match{FileID: f.ID, Path: f.Path, RepositoryID: f.RepositoryID, SnapshotID: f.SnapshotID, ProjectIDs: projects, Ranges: canonicalRanges(ranges.ranges), RangesTruncated: ranges.truncated})
 	}
 	r.Total = len(matched)
 	start := min(o.Offset, len(matched))

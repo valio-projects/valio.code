@@ -131,6 +131,41 @@ func TestBoundedShortScanAndNoEarlyTopK(t *testing.T) {
 		t.Fatalf("byte limit ignored: %+v", r)
 	}
 }
+
+func TestRangeBudgetKeepsMatchedFileTotalsExact(t *testing.T) {
+	content := strings.Repeat("a", maxRangesPerMatch+1)
+	for _, query := range []string{"a", `/a/`, "a AND a"} {
+		r := run(t, []File{{ID: "dense", Content: content}, {ID: "other", Content: "a"}}, query, Options{})
+		if r.Total != 2 || !r.Complete || !r.Truncated || len(r.Matches) != 2 {
+			t.Fatalf("%q lost exact file result: %+v", query, r)
+		}
+		if len(r.Matches[0].Ranges) != maxRangesPerMatch || !r.Matches[0].RangesTruncated {
+			t.Fatalf("%q did not retain bounded range sample: %+v", query, r.Matches[0])
+		}
+		if r.Matches[1].RangesTruncated {
+			t.Fatalf("%q marked a small result truncated: %+v", query, r.Matches[1])
+		}
+	}
+}
+
+func TestRangeBudgetDoesNotChangeNotTruth(t *testing.T) {
+	dense := strings.Repeat("a", maxRangesPerMatch+1)
+	r := run(t, []File{{ID: "dense", Content: dense}, {ID: "clean", Content: "b"}}, "NOT a", Options{})
+	if r.Total != 1 || !r.Complete || r.Truncated || !reflect.DeepEqual(ids(r), []string{"clean"}) {
+		t.Fatalf("NOT must remain exact without irrelevant ranges: %+v", r)
+	}
+}
+
+func TestRangeBudgetCapsSymbolOccurrences(t *testing.T) {
+	symbols := make([]Symbol, maxRangesPerMatch+1)
+	for i := range symbols {
+		symbols[i] = Symbol{Name: "needle", Kind: "function", Start: i, End: i + 1}
+	}
+	r := run(t, []File{{ID: "symbols", Content: strings.Repeat("x", maxRangesPerMatch+1), Symbols: symbols}}, "symbol:needle", Options{})
+	if r.Total != 1 || !r.Complete || !r.Truncated || !r.Matches[0].RangesTruncated || len(r.Matches[0].Ranges) != maxRangesPerMatch {
+		t.Fatalf("symbol range cap lost result truth: %+v", r)
+	}
+}
 func TestFilters(t *testing.T) {
 	f := []File{{ID: "f", Path: "src/a_test.go", Content: "func Hello() {}", Language: "go", RepositoryID: "repo", ProjectIDs: []string{"p"}, Test: true, Symbols: []Symbol{{Name: "Hello", Kind: "function", Start: 5, End: 10}}}}
 	r := run(t, f, `project:p repo:repo file:a_test.go lang:go path:src symbol:Hello kind:function test:true generated:false`, Options{})

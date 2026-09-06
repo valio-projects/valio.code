@@ -12,21 +12,35 @@ import (
 	"time"
 )
 
+// UploadOptions identifies an authenticated snapshot-ingestion destination.
 type UploadOptions struct {
-	Endpoint     string
-	Token        string
-	WorkspaceID  string
+	// Endpoint is HTTPS or loopback HTTP ingestion URL.
+	Endpoint string
+	// Token is sent only as the endpoint bearer credential.
+	Token string
+	// WorkspaceID scopes the destination workspace.
+	WorkspaceID string
+	// RepositoryID identifies the destination repository.
 	RepositoryID string
 }
+
+// UploadResult is the server receipt for an accepted snapshot.
 type UploadResult struct {
+	// SnapshotID identifies the accepted snapshot.
 	SnapshotID string `json:"snapshotId"`
-	ViewID     string `json:"viewId,omitempty"`
-	JobID      string `json:"jobId,omitempty"`
-	Status     string `json:"status"`
+	// ViewID identifies an optional resulting analysis view.
+	ViewID string `json:"viewId,omitempty"`
+	// JobID identifies optional asynchronous processing.
+	JobID string `json:"jobId,omitempty"`
+	// Status is the server-reported receipt status.
+	Status string `json:"status"`
 }
 
+// UploadClient uploads snapshots with an optional custom HTTP transport.
 type UploadClient struct {
-	Options   UploadOptions
+	// Options supplies endpoint, credential, and destination identities.
+	Options UploadOptions
+	// Transport optionally replaces the default transport.
 	Transport http.RoundTripper
 }
 
@@ -36,6 +50,7 @@ func Upload(ctx context.Context, opts UploadOptions, s Snapshot) (UploadResult, 
 	return (UploadClient{Options: opts}).Upload(ctx, s)
 }
 
+// Upload validates s, sends it, and returns a sanitized server receipt.
 func (u UploadClient) Upload(ctx context.Context, s Snapshot) (UploadResult, error) {
 	opts := u.Options
 	if err := ValidateSnapshot(s); err != nil {

@@ -30,6 +30,8 @@ type parser struct {
 func Parse(input string) (*Query, error) {
 	return (QueryParser{}).Parse(input)
 }
+
+// Parse validates input under the configured byte limit and returns an opaque query.
 func (p QueryParser) Parse(input string) (*Query, error) {
 	limit := p.MaxQueryBytes
 	if limit <= 0 {

@@ -6,17 +6,28 @@ import (
 	"unicode"
 )
 
+// BlockBytes is the default maximum source-byte size of an index block.
 const BlockBytes = 16 * 1024
 
+// Block records source byte bounds and normalized trigram tokens.
 type Block struct {
-	Start  int
-	End    int
+	// Start is the included source byte offset.
+	Start int
+	// End is the excluded source byte offset.
+	End int
+	// Tokens are normalized trigram encodings for candidate filtering.
 	Tokens []string
 }
+
+// Index is a conservative text-candidate index; verification still reads content.
 type Index struct {
-	Blocks   []Block
+	// Blocks partition content with overlap for cross-boundary trigrams.
+	Blocks []Block
+	// Trigrams is aggregate membership across all blocks.
 	Trigrams map[string]struct{}
 }
+
+// IndexBuilder controls source-byte block sizing; nonpositive values use BlockBytes.
 type IndexBuilder struct{ BlockSize int }
 
 // foldRune chooses one representative from Unicode's SimpleFold orbit, the
@@ -52,6 +63,8 @@ func trigrams(s string) []string {
 func BuildIndex(content string) Index {
 	return (IndexBuilder{}).Build(content)
 }
+
+// Build returns a conservative index for content without changing its source offsets.
 func (builder IndexBuilder) Build(content string) Index {
 	blockSize := builder.BlockSize
 	if blockSize <= 0 {

@@ -114,12 +114,14 @@ func (c *compiled) candidate(idx Index) bool {
 	return true
 }
 
-func (c *compiled) matches(value string) []Range {
+func (c *compiled) matches(value string) rangeMatches {
 	if c.mode == Regex {
-		hits := c.re.FindAllStringIndex(value, -1)
-		out := make([]Range, 0, len(hits))
+		// Request one extra occurrence as a sentinel, so regex evaluation never
+		// allocates an unbounded result slice for a single file field.
+		hits := c.re.FindAllStringIndex(value, maxRangesPerMatch+1)
+		out := rangeMatches{ranges: make([]Range, 0, min(len(hits), maxRangesPerMatch))}
 		for _, h := range hits {
-			out = append(out, Range{h[0], h[1]})
+			out.add(Range{h[0], h[1]})
 		}
 		return out
 	}
@@ -141,11 +143,11 @@ func (c *compiled) matches(value string) []Range {
 	}
 	if c.mode == Exact {
 		if text == c.value {
-			return []Range{{0, len(value)}}
+			return rangeMatches{ranges: []Range{{0, len(value)}}}
 		}
-		return nil
+		return rangeMatches{}
 	}
-	var out []Range
+	out := rangeMatches{}
 	for at := 0; at <= len(text)-len(c.value); {
 		p := strings.Index(text[at:], c.value)
 		if p < 0 {
@@ -154,45 +156,49 @@ func (c *compiled) matches(value string) []Range {
 		start := at + p
 		end := start + len(c.value)
 		if c.sensitive {
-			out = append(out, Range{start, end})
+			out.add(Range{start, end})
 		} else {
-			out = append(out, Range{starts[start], ends[end-1]})
+			out.add(Range{starts[start], ends[end-1]})
+		}
+		if out.truncated {
+			return out
 		}
 		at = end
 	}
 	return out
 }
-func (c *compiled) evaluate(f File, projects []string) (bool, []Range) {
+func (c *compiled) evaluate(f File, projects []string) (bool, rangeMatches) {
 	switch c.n.op {
 	case "NOT":
 		ok, _ := c.left.evaluate(f, projects)
-		return !ok, nil
+		// NOT is exact at the file level but deliberately has no positive spans.
+		return !ok, rangeMatches{}
 	case "AND":
 		a, ar := c.left.evaluate(f, projects)
 		if !a {
-			return false, nil
+			return false, rangeMatches{}
 		}
 		b, br := c.right.evaluate(f, projects)
 		if !b {
-			return false, nil
+			return false, rangeMatches{}
 		}
-		return true, append(ar, br...)
+		return true, combineRanges(ar, br)
 	case "OR":
 		a, ar := c.left.evaluate(f, projects)
 		b, br := c.right.evaluate(f, projects)
 		if !a {
-			ar = nil
+			ar = rangeMatches{}
 		}
 		if !b {
-			br = nil
+			br = rangeMatches{}
 		}
-		return a || b, append(ar, br...)
+		return a || b, combineRanges(ar, br)
 	}
 	var values []string
 	switch c.n.field {
 	case "", "content":
 		r := c.matches(f.Content)
-		return len(r) > 0, r
+		return len(r.ranges) > 0, r
 	case "path":
 		values = []string{f.Path}
 	case "file":
@@ -204,30 +210,36 @@ func (c *compiled) evaluate(f File, projects []string) (bool, []Range) {
 	case "project":
 		values = projects
 	case "test":
-		return f.Test == (c.n.value == "true"), nil
+		return f.Test == (c.n.value == "true"), rangeMatches{}
 	case "generated":
-		return f.Generated == (c.n.value == "true"), nil
+		return f.Generated == (c.n.value == "true"), rangeMatches{}
 	case "symbol", "kind":
-		var ranges []Range
+		ranges := rangeMatches{}
 		ok := false
+		matchingSymbols := 0
 		for _, s := range f.Symbols {
 			v := s.Name
 			if c.n.field == "kind" {
 				v = s.Kind
 			}
-			if len(c.matches(v)) > 0 {
+			if len(c.matches(v).ranges) > 0 {
 				ok = true
+				matchingSymbols++
+				if matchingSymbols > maxRangesPerMatch {
+					ranges.truncated = true
+					break
+				}
 				if s.Start >= 0 && s.End >= s.Start && s.End <= len(f.Content) {
-					ranges = append(ranges, Range{s.Start, s.End})
+					ranges.add(Range{s.Start, s.End})
 				}
 			}
 		}
 		return ok, ranges
 	}
 	for _, v := range values {
-		if len(c.matches(v)) > 0 {
-			return true, nil
+		if len(c.matches(v).ranges) > 0 {
+			return true, rangeMatches{}
 		}
 	}
-	return false, nil
+	return false, rangeMatches{}
 }

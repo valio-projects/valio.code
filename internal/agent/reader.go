@@ -9,10 +9,14 @@ import (
 // SourceReader supplies bounded source bytes; CaptureBuilder applies the same
 // mandatory filtering policy to every implementation before any content hashes.
 type SourceReader interface {
+	// Read returns repository-relative bytes up to limit or a safe error.
 	Read(path string, limit int64) ([]byte, error)
 }
+
+// FilesystemReader reads through Root so paths cannot escape the worktree.
 type FilesystemReader struct{ Root *os.Root }
 
+// Read rejects non-regular or oversize files beneath Root.
 func (r FilesystemReader) Read(path string, limit int64) ([]byte, error) {
 	f, e := r.Root.Open(path)
 	if e != nil {

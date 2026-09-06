@@ -102,6 +102,8 @@ func Pending(dir string) ([]string, error) {
 	sort.Strings(ids)
 	return ids, nil
 }
+
+// Load reads a validated snapshot by ID without decoding oversized spool payloads.
 func Load(dir, id string) (Snapshot, error) {
 	if !snapshotID.MatchString(id) {
 		return Snapshot{}, errors.New("invalid snapshot ID")

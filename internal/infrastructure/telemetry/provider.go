@@ -15,8 +15,13 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
-type Provider struct{ TracerProvider *sdktrace.TracerProvider }
+// Provider owns the application tracer provider and its exporter lifecycle.
+type Provider struct {
+	// TracerProvider is registered globally while this provider is active.
+	TracerProvider *sdktrace.TracerProvider
+}
 
+// NewProvider builds and globally registers tracing from c; it validates any exporter URL.
 func NewProvider(ctx context.Context, c Config) (*Provider, error) {
 	options := []sdktrace.TracerProviderOption{sdktrace.WithResource(resource.NewSchemaless(attribute.String("service.name", c.ServiceName))), sdktrace.WithSampler(sdktrace.ParentBased(sdktrace.AlwaysSample()))}
 	if c.Endpoint != "" {
@@ -37,4 +42,6 @@ func NewProvider(ctx context.Context, c Config) (*Provider, error) {
 	otel.SetTextMapPropagator(propagation.TraceContext{})
 	return &Provider{TracerProvider: provider}, nil
 }
+
+// Shutdown flushes and closes the owned tracer provider before ctx expires.
 func (p *Provider) Shutdown(ctx context.Context) error { return p.TracerProvider.Shutdown(ctx) }
