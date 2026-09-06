@@ -1,0 +1,7 @@
+# Only integration tests publish the database, on loopback and an alternate port.
+services:
+  surrealdb:
+    ports: ["127.0.0.1:18000:8000"]
+networks:
+  backend:
+    internal: false

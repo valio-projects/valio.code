@@ -1,0 +1,39 @@
+name: valio-code
+services:
+  volume-init:
+    image: alpine:3.23.0@sha256:51183f2cfa6320055da30872f211093f9ff1d3cf06f39a0bdb212314c5dc7375
+    user: "0:0"
+    command: [chown, "65532:65532", /data]
+    volumes:
+      - surreal-data:/data
+    network_mode: none
+    restart: "no"
+  surrealdb:
+    image: surrealdb/surrealdb:v3.2.4@sha256:51baed8709f57f67dcf04b30e3177db846803fa9342dae2be58c6fa5f8d59843
+    user: "65532:65532"
+    depends_on:
+      volume-init:
+        condition: service_completed_successfully
+    command: [start, --bind, "0.0.0.0:8000", "rocksdb:/data/valio.db"]
+    environment:
+      SURREAL_USER: root
+      SURREAL_PASS: ${SURREAL_ROOT_PASSWORD:?Run scripts/setup.ps1 first}
+    volumes:
+      - surreal-data:/data
+    networks: [backend]
+    restart: unless-stopped
+    healthcheck:
+      test: [CMD, /surreal, isready, --endpoint, "http://localhost:8000"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 4G
+networks:
+  backend:
+    internal: true
+volumes:
+  surreal-data:
