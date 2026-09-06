@@ -1,4 +1,4 @@
-package scheduling
+package queue
 
 import (
 	"context"

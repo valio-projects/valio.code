@@ -1,4 +1,4 @@
-package scheduling
+package queue
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/valio-projects/valio.code/internal/storage/surreal"
+	"github.com/valio-projects/valio.code/internal/infrastructure/storage/surreal"
 )
 
 func TestSurrealLeaseFencingAndIdempotency(t *testing.T) {

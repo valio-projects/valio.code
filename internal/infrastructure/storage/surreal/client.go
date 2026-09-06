@@ -13,6 +13,10 @@ import (
 	"net/url"
 	"regexp"
 	"time"
+
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
 )
 
 var identifier = regexp.MustCompile(`^[a-zA-Z][a-zA-Z0-9_]{0,63}$`)
@@ -55,7 +59,15 @@ func (c *Client) ForDatabase(database string) (*Client, error) {
 
 // Query uses the JSON RPC query method. Values travel as bound parameters,
 // never interpolated SQL or URL parameters (source payloads can be large).
-func (c *Client) Query(ctx context.Context, sql string, vars map[string]any) ([]Statement, error) {
+func (c *Client) Query(ctx context.Context, sql string, vars map[string]any) (statements []Statement, err error) {
+	ctx, span := otel.Tracer("valio.infrastructure.surreal").Start(ctx, "surreal.query")
+	span.SetAttributes(attribute.String("db.system.name", "surrealdb"), attribute.String("db.namespace", c.config.Database))
+	defer func() {
+		if err != nil {
+			span.SetStatus(codes.Error, "database_failure")
+		}
+		span.End()
+	}()
 	if vars == nil {
 		vars = map[string]any{}
 	}

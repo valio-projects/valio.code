@@ -1,5 +1,5 @@
 // Package scheduling implements durable at-least-once jobs in SurrealDB.
-package scheduling
+package queue
 
 import (
 	"context"
@@ -8,7 +8,8 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/valio-projects/valio.code/internal/storage/surreal"
+	"github.com/valio-projects/valio.code/internal/infrastructure/storage/surreal"
+	"go.opentelemetry.io/otel/propagation"
 )
 
 type Queue struct{ DB *surreal.Client }
@@ -19,12 +20,14 @@ func (q Queue) Enqueue(ctx context.Context, kind, key string, payload any, prior
 	}
 	sum := sha256.Sum256([]byte(kind + "\x00" + key))
 	id := hex.EncodeToString(sum[:])
+	carrier := propagation.MapCarrier{}
+	propagation.TraceContext{}.Inject(ctx, carrier)
 	// Ignore duplicates without resetting a running/completed job.
 	_, err := q.DB.Query(ctx, `INSERT IGNORE INTO job {
  id:type::record('job',$key),key:$key,kind:$kind,payload:$payload,
  status:'queued',priority:$priority,attempts:0,fence:0,owner:'',lease_until:0,
- available_at:time::unix(time::now()),error_code:''
- };`, map[string]any{"key": id, "kind": kind, "payload": payload, "priority": priority})
+ available_at:time::unix(time::now()),error_code:'',trace_parent:$trace_parent
+ };`, map[string]any{"key": id, "kind": kind, "payload": payload, "priority": priority, "trace_parent": carrier.Get("traceparent")})
 	return id, err
 }
 

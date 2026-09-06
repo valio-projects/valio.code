@@ -1,4 +1,4 @@
-package scheduling
+package jobs
 
 import (
 	"encoding/json"
@@ -18,4 +18,6 @@ type Job struct {
 	Owner      string          `json:"owner"`
 	LeaseUntil int64           `json:"lease_until"`
 	ErrorCode  string          `json:"error_code,omitempty"`
+	// TraceParent links processing to the enqueue span; arbitrary baggage is excluded.
+	TraceParent string `json:"trace_parent,omitempty"`
 }

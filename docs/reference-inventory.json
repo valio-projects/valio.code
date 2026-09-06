@@ -1,0 +1,13 @@
+{
+  "observedAt": "2026-09-07",
+  "applicationLicense": "AGPL-3.0",
+  "policy": "Reference repositories are inspected, not copied or added as runtime dependencies.",
+  "references": [
+    {"name":"SocratiCode","revision":"b257b12","license":"AGPL-3.0-only; commercial licensing file also present","use":"Watcher, content hashes, chunks, linked projects and MCP patterns; no name-only call resolution adopted as exact."},
+    {"name":"Zoekt","revision":"84885814","license":"Apache-2.0","use":"Conservative trigram candidate filtering and final source verification; no Zoekt storage engine."},
+    {"name":"SCIP","revision":"1c2b6db","license":"Apache-2.0","use":"Planned compiler interchange format, not implemented compiler coverage."},
+    {"name":"SurrealDB source","revision":"18971ffba","license":"Business Source License 1.1 with additional use grant","use":"Storage reference; runtime pinned separately to 3.2.4 container."},
+    {"name":"raged","revision":"3f8b75c","license":"LGPL-3.0","use":"Parsing/storage/query separation and history/evaluation design reference."}
+  ],
+  "runtime": {"go":"1.26.8","surrealdb":"3.2.4","surrealdbImageDigest":"sha256:51baed8709f57f67dcf04b30e3177db846803fa9342dae2be58c6fa5f8d59843"}
+}

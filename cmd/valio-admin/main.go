@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/valio-projects/valio.code/internal/configuration"
-	"github.com/valio-projects/valio.code/internal/storage/surreal"
+	"github.com/valio-projects/valio.code/internal/infrastructure/storage/surreal"
 	"os"
 	"time"
 )

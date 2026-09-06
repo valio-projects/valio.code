@@ -1,14 +1,17 @@
-package scheduling
+package jobs
 
 import (
 	"context"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/propagation"
 	"time"
 )
 
-type Handler func(context.Context, Job) error
-
-func (q Queue) Run(ctx context.Context, owner string, handlers map[string]Handler) error {
-	timer := time.NewTicker(time.Second)
+func (w *Worker) runSlot(ctx context.Context, owner string) error {
+	q := w.Repository
+	timer := time.NewTicker(w.PollInterval)
 	defer timer.Stop()
 	for {
 		select {
@@ -17,22 +20,26 @@ func (q Queue) Run(ctx context.Context, owner string, handlers map[string]Handle
 		case <-timer.C:
 			j, err := q.Claim(ctx, owner)
 			if err != nil {
+				w.Logger.Warn("job claim failed", "worker", owner, "error_class", "database")
 				continue
 			}
 			if j == nil {
 				continue
 			}
-			handler, ok := handlers[j.Kind]
+			processor, ok := w.Processors[j.Kind]
 			if !ok {
 				_ = q.Fail(ctx, *j, "UNSUPPORTED_JOB", false)
 				continue
 			}
 			workCtx, cancel := context.WithCancel(ctx)
+			workCtx = propagation.TraceContext{}.Extract(workCtx, propagation.MapCarrier{"traceparent": j.TraceParent})
+			workCtx, span := otel.Tracer("valio.worker").Start(workCtx, "job.process")
+			span.SetAttributes(attribute.String("job.id", j.ID), attribute.String("job.kind", j.Kind), attribute.Int("job.fence", j.Fence))
 			done := make(chan struct{})
 			heartbeatDone := make(chan struct{})
 			go func() {
 				defer close(heartbeatDone)
-				t := time.NewTicker(15 * time.Second)
+				t := time.NewTicker(w.HeartbeatInterval)
 				defer t.Stop()
 				for {
 					select {
@@ -48,7 +55,11 @@ func (q Queue) Run(ctx context.Context, owner string, handlers map[string]Handle
 					}
 				}
 			}()
-			err = handler(workCtx, *j)
+			err = processor.Process(workCtx, *j)
+			if err != nil {
+				span.SetStatus(codes.Error, "processor_failure")
+			}
+			span.End()
 			close(done)
 			cancel()
 			<-heartbeatDone

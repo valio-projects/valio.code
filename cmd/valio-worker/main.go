@@ -1,23 +1,28 @@
+// valio-worker composes repositories and processors with Uber Fx.
 package main
 
 import (
 	"context"
 	"fmt"
 	"github.com/valio-projects/valio.code/internal/configuration"
-	"github.com/valio-projects/valio.code/internal/scheduling"
-	"github.com/valio-projects/valio.code/internal/storage/surreal"
+	"github.com/valio-projects/valio.code/internal/infrastructure/storage/surreal"
+	"github.com/valio-projects/valio.code/internal/infrastructure/telemetry"
+	"go.uber.org/fx"
 	"os"
-	"os/signal"
-	"syscall"
+	"time"
 )
 
 func main() {
-	if err := run(); err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
+	if len(os.Args) == 2 && os.Args[1] == "health" {
+		if err := health(); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		return
 	}
+	fx.New(telemetry.Module, workerModule).Run()
 }
-func run() error {
+func health() error {
 	cfg, err := configuration.Database()
 	if err != nil {
 		return err
@@ -26,21 +31,7 @@ func run() error {
 	if err != nil {
 		return err
 	}
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	if len(os.Args) == 2 && os.Args[1] == "health" {
-		return db.Ping(ctx)
-	}
-	if err = db.Ping(ctx); err != nil {
-		return err
-	}
-	host, _ := os.Hostname()
-	q := scheduling.Queue{DB: db}
-	// Supported job handlers are registered explicitly. Unknown work is failed
-	// as unsupported rather than acknowledged as a successful analysis.
-	err = q.Run(ctx, fmt.Sprintf("%s-%d", host, os.Getpid()), map[string]scheduling.Handler{"health": func(ctx context.Context, _ scheduling.Job) error { return db.Ping(ctx) }})
-	if ctx.Err() != nil {
-		return nil
-	}
-	return err
+	return db.Ping(ctx)
 }

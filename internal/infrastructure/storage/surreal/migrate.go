@@ -16,12 +16,20 @@ func (c *Client) Migrate(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	data, err := migrations.ReadFile("migrations/001_initial.surql")
+	entries, err := migrations.ReadDir("migrations")
 	if err != nil {
 		return err
 	}
-	_, err = c.Query(ctx, string(data), nil)
-	return err
+	for _, entry := range entries {
+		data, err := migrations.ReadFile("migrations/" + entry.Name())
+		if err != nil {
+			return err
+		}
+		if _, err = c.Query(ctx, string(data), nil); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // ProvisionUser creates a database-scoped system user. Role is intentionally

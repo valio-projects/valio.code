@@ -4,7 +4,7 @@ import (
 	"errors"
 	"os"
 
-	"github.com/valio-projects/valio.code/internal/storage/surreal"
+	"github.com/valio-projects/valio.code/internal/infrastructure/storage/surreal"
 )
 
 func Env(key, fallback string) string {
