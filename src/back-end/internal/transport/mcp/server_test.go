@@ -40,7 +40,7 @@ func TestStreamableToolDiscoveryAndInvocation(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(tools.Tools) != 5 {
+	if len(tools.Tools) != 18 {
 		t.Fatalf("advertised unimplemented tools: %d", len(tools.Tools))
 	}
 	result, err := session.CallTool(ctx, &sdk.CallToolParams{Name: "project_list", Arguments: map[string]any{}})

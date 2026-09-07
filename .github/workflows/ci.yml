@@ -19,6 +19,8 @@ jobs:
       - run: npm test
       - run: npm run build
   go:
+    env:
+      VALIO_TEST_SYNTAX_HELPER: ${{ github.workspace }}/src/back-end/analyzers/syntax/index.js
     defaults:
       run:
         working-directory: src/back-end
@@ -32,17 +34,31 @@ jobs:
         with:
           go-version: '1.26.8'
           cache: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26.8.1'
+      - run: npm ci --ignore-scripts
+        working-directory: src/back-end/analyzers/syntax
+      - run: npm test
+        working-directory: src/back-end/analyzers/syntax
       - run: go vet ./...
       - run: go test ./...
       - run: go build ./cmd/...
   integration:
     runs-on: ubuntu-latest
+    env:
+      VALIO_TEST_SYNTAX_HELPER: ${{ github.workspace }}/src/back-end/analyzers/syntax/index.js
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
           go-version: '1.26.8'
           cache: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26.8.1'
+      - run: npm ci --ignore-scripts
+        working-directory: src/back-end/analyzers/syntax
       - run: docker compose -p valio-code-test -f compose.yaml -f deploy/compose.test.yaml up -d --wait surrealdb jaeger
       - name: Real database integration
         shell: bash

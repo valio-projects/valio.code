@@ -30,11 +30,19 @@ func newAuthorization(c apiConfiguration) (*authorization.Bootstrap, error) {
 func newCatalog(store *surreal.AppStore, c apiConfiguration) *catalog.Service {
 	return &catalog.Service{Store: store, Workspace: c.Workspace}
 }
-func newQueries(store *surreal.AppStore, c apiConfiguration) *queries.Service {
-	return &queries.Service{Store: store, WorkspaceID: c.Workspace.ID}
+func newQueries(store *surreal.AppStore, c apiConfiguration, db *surreal.Client) (*queries.Service, error) {
+	service := &queries.Service{Store: store, WorkspaceID: c.Workspace.ID}
+	if err := configureAI(service, db); err != nil {
+		return nil, err
+	}
+	return service, nil
 }
-func newIngestion(store *surreal.AppStore, c apiConfiguration) *snapshots.Service {
-	return &snapshots.Service{Store: store, WorkspaceID: c.Workspace.ID}
+func newIngestion(store *surreal.AppStore, c apiConfiguration) (*snapshots.Service, error) {
+	service := &snapshots.Service{Store: store, WorkspaceID: c.Workspace.ID}
+	if err := configureSyntax(service); err != nil {
+		return nil, err
+	}
+	return service, nil
 }
 func newMCP(store *surreal.AppStore, q *queries.Service) (*mcpapi.Server, error) {
 	return mcpapi.NewServer(store, *q)

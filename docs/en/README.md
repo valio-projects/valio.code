@@ -9,6 +9,7 @@ and [validation record](reference/validation.md) before relying on a capability.
 
 - [Install and run](getting-started/installation.md)
 - [Configuration](getting-started/configuration.md)
+- [AI embedding providers](getting-started/ai-providers.md)
 
 ## Contributing
 
@@ -24,6 +25,9 @@ and [validation record](reference/validation.md) before relying on a capability.
 
 ## Reference
 
+- [Language analysis and indexing](reference/language-analysis.md)
+
+- [Intelligence wave: current capability and limits](reference/intelligence-wave.md)
 - [Compatibility baseline](reference/compatibility.md)
 - [Type information contract](reference/type-information.md)
 - [Web implementation notes](reference/web.md)

@@ -70,7 +70,13 @@ func (s *AppStore) Files(ctx context.Context, v snapshots.View) ([]search.File, 
 		return nil, e
 	}
 	reports := map[string]analysis.Report{}
+	syntax := map[string][]search.Symbol{}
 	for _, a := range artifacts {
+		mapped, err := syntaxSymbols(a.Syntax)
+		if err != nil {
+			return nil, fault.ErrInvalid
+		}
+		syntax[a.FileID] = mapped
 		var r analysis.Report
 		if json.Unmarshal(a.Report, &r) != nil {
 			return nil, fault.ErrInvalid
@@ -90,6 +96,7 @@ func (s *AppStore) Files(ctx context.Context, v snapshots.View) ([]search.File, 
 		for _, symbol := range reports[f.ID].Symbols {
 			file.Symbols = append(file.Symbols, search.Symbol{Name: symbol.Name, Kind: symbol.Kind, Start: symbol.Range.Start, End: symbol.Range.End})
 		}
+		file.Symbols = append(file.Symbols, syntax[f.ID]...)
 		result = append(result, file)
 	}
 	return result, nil
@@ -102,7 +109,7 @@ func (s *AppStore) Artifacts(ctx context.Context, v snapshots.View) ([]snapshots
 	}
 	keys := []string{}
 	for _, f := range v.Files {
-		if f.Language == "go" {
+		if f.Language == "go" || v.Projections["retrieval_chunks"] == "ready" {
 			b, _ := json.Marshal([]string{v.ID, f.ID})
 			sum := sha256.Sum256(b)
 			keys = append(keys, hex.EncodeToString(sum[:]))

@@ -13,6 +13,7 @@ type ViewInput struct {
 }
 
 func registerQueryTools(server *mcp.Server, service queries.Service) {
+	registerIntelligenceTools(server, service)
 	mcp.AddTool(server, &mcp.Tool{Name: "code_search", Description: "Verified substring, exact or RE2 search in one immutable project view. No semantic or graph inference."}, func(ctx context.Context, _ *mcp.CallToolRequest, input queries.SearchQuery) (*mcp.CallToolResult, Output, error) {
 		result, err := service.Search(ctx, input)
 		return nil, Output{Data: result}, err

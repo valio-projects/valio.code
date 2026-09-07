@@ -16,8 +16,14 @@ func main() {
 	}
 }
 func run() error {
+	if len(os.Args) >= 2 && os.Args[1] == "ai" {
+		if len(os.Args) < 3 || os.Args[2] != "doctor" {
+			return fmt.Errorf("usage: valio-admin ai doctor --config PATH [--profile ID] [--list]")
+		}
+		return runAIDoctor(os.Args[3:])
+	}
 	if len(os.Args) != 2 || (os.Args[1] != "migrate" && os.Args[1] != "health") {
-		return fmt.Errorf("usage: valio-admin migrate|health")
+		return fmt.Errorf("usage: valio-admin migrate|health|ai doctor")
 	}
 	cfg, err := configuration.Database()
 	if err != nil {

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/valio-projects/valio.code/internal/application/fault"
 	"github.com/valio-projects/valio.code/internal/domain"
+	"github.com/valio-projects/valio.code/internal/domain/embeddings"
 	"github.com/valio-projects/valio.code/internal/domain/repositories"
 	"github.com/valio-projects/valio.code/internal/domain/snapshots"
 	"github.com/valio-projects/valio.code/internal/domain/typeinfo"
@@ -19,6 +20,12 @@ type Service struct {
 	Store repositories.SnapshotRepository
 	// WorkspaceID binds this value to the single configured workspace.
 	WorkspaceID domain.WorkspaceID
+	// Models resolves named operator-configured embedding providers.
+	Models ModelResolver
+	// Vectors persists and reads immutable profile-isolated vectors in SurrealDB.
+	Vectors repositories.EmbeddingRepository
+	// Reranker optionally scores the bounded candidate list with a cross encoder.
+	Reranker embeddings.Reranker
 }
 
 // View resolves id, or the current latest pointer exactly once when id is empty.

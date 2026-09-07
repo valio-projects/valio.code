@@ -113,6 +113,23 @@ not evidence for 10-million-line scale, five-language compiler support or full v
 
 ## Design follow-ups, not implemented capabilities
 
+The [intelligence wave](intelligence-wave.md) implements the first bounded
+version of the chunk, local Go graph, BM25, embedding and hybrid increments
+listed below. This table describes their broader acceptance goals; it is not
+a statement that their initial implementations are still absent.
+
+The reference-porting queue now includes `codebase-memory-mcp` at revision
+`aa44c28ea5ea82a5f811f0bace4f7857a68cac80` (MIT). Candidates are targeted index
+coverage checks, architecture summaries, structural graph queries, HTTP service
+linking, infrastructure graphs, call tracing, ADRs and AST/LSP integration.
+Each needs implementation-level review and fixtures before porting; README
+performance claims are not valio.code benchmarks. See the
+[porting queue](../../ru/design/codebase-memory-porting.md).
+
+`chunkhound` is also queued at `2ab775354d8d378bdacc8ea76b51a588362cfb99` for
+implementation-level review of chunking, hybrid retrieval, model providers,
+Git research and cited context. See its [queue](../../ru/design/chunkhound-porting.md).
+
 The documentation wave adds English and Russian product READMEs, installation,
 configuration, contribution and observability guides, and architecture with ten
 diagrams per language. Design notes cover graph extensions, eight embedding

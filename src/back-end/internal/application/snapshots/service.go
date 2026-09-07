@@ -31,6 +31,8 @@ type Service struct {
 	Store Repository
 	// WorkspaceID binds this value to the single configured workspace.
 	WorkspaceID domain.WorkspaceID
+	// Syntax optionally provides non-Go AST evidence; nil explicitly means unavailable.
+	Syntax SyntaxAnalyzer
 }
 
 // Digest returns a SHA-256 digest of deterministic Go JSON encoding.
@@ -74,7 +76,13 @@ func (s Service) Ingest(ctx context.Context, c IngestCommand) (IngestResult, err
 	p.Snapshot = Metadata{ID: Digest([]string{string(s.WorkspaceID), string(r.ID), c.Snapshot.ID}), AgentSnapshotID: c.Snapshot.ID, WorkspaceID: s.WorkspaceID, RepositoryID: r.ID, Repository: c.Snapshot.Repository, Config: c.Snapshot.Config, Diagnostics: c.Snapshot.Diagnostics}
 	files := []projects.SourceFile{}
 	contents := map[string]string{}
-	v := View{WorkspaceID: s.WorkspaceID, SnapshotID: p.Snapshot.ID, Projects: defs, ProjectRevisions: []domain.ProjectRevisionRef{}, Repositories: []domain.RepositorySnapshot{}, Files: []FileRef{}, Profile: "go-ast-syntax/v1;syntax-default", Status: "partial", Projections: map[string]string{"source_text": "ready", "symbols": "partial", "types": "partial", "compiler": "unsupported", "references": "unsupported", "git_diff": "unsupported", "structural_fingerprint": "unsupported", "configuration_graph": "unsupported"}}
+	v := View{WorkspaceID: s.WorkspaceID, SnapshotID: p.Snapshot.ID, Projects: defs, ProjectRevisions: []domain.ProjectRevisionRef{}, Repositories: []domain.RepositorySnapshot{}, Files: []FileRef{}, Profile: "go-ast-syntax/v2;go-codegraph/v2;chunks/v1;syntax-default", Status: "partial", Projections: projectionStatus()}
+	if s.Syntax != nil {
+		v.Profile += ";" + s.Syntax.Profile()
+		v.Projections["multilanguage_syntax"] = "partial"
+	} else {
+		v.Projections["multilanguage_syntax"] = "unsupported"
+	}
 	for _, old := range previous.Repositories {
 		if old.RepositoryID != r.ID {
 			v.Repositories = append(v.Repositories, old)
@@ -150,18 +158,38 @@ func (s Service) Ingest(ctx context.Context, c IngestCommand) (IngestResult, err
 	} else if !errors.Is(err, fault.ErrNotFound) {
 		return result, err
 	}
+	chunks, e := buildChunks(ctx, v, contents)
+	if e != nil {
+		return result, e
+	}
+	graphs, e := buildGraphShards(ctx, v, contents)
+	if e != nil {
+		return result, e
+	}
 	artifactBytes := 0
 	for _, f := range v.Files {
 		if err := ctx.Err(); err != nil {
 			return result, err
 		}
-		if f.Language != "go" {
-			continue
+		report := analysis.Report{}
+		if f.Language == "go" {
+			report = analysis.Analyze(f.Path, contents[f.ID])
 		}
-		report := analysis.Analyze(f.Path, contents[f.ID])
 		reportJSON, _ := json.Marshal(report)
 		artifact := Artifact{ID: Digest([]string{v.ID, f.ID}), FileID: f.ID, ViewID: v.ID, Report: reportJSON, Types: []typeinfo.TypeDescriptor{}}
+		artifact.Chunks = chunks[f.ID]
+		artifact.Graph = graphs[f.ID]
+		if s.Syntax != nil && supportedSyntax(f.Language) {
+			syntax, err := s.Syntax.Analyze(ctx, f.Path, f.Language, contents[f.ID])
+			if err != nil {
+				return result, err
+			}
+			artifact.Syntax = syntax
+		}
 		for _, projectID := range f.ProjectIDs {
+			if f.Language != "go" {
+				continue
+			}
 			scope := typeinfo.TypeScope{WorkspaceID: s.WorkspaceID, ProjectID: domain.ProjectID(projectID), BuildProfileID: "syntax-default", VersionID: v.ID}
 			descriptors, err := types.FromGoReport(scope, f.RepositoryID, contents[f.ID], report)
 			if err != nil {

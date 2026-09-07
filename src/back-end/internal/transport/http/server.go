@@ -34,6 +34,7 @@ func (s *Server) Handler() http.Handler {
 	s.registerSession(mux)
 	s.registerAdmin(mux)
 	s.registerRead(mux)
+	s.registerIntelligence(mux)
 	if s.MCP != nil {
 		mux.Handle("/mcp", s.MCP)
 	}

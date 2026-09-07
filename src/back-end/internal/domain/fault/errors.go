@@ -5,6 +5,8 @@ package fault
 import "errors"
 
 var (
+	// ErrUnavailable denotes an unconfigured provider or unavailable projection.
+	ErrUnavailable = errors.New("capability unavailable")
 	// ErrNotFound indicates that the requested identity has no visible record.
 	ErrNotFound = errors.New("not found")
 	// ErrForbidden rejects a workspace crossing before returning any data.

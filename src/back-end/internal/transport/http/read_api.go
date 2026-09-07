@@ -45,14 +45,29 @@ func (s *Server) registerRead(mux *http.ServeMux) {
 		respond(w, v, e)
 	})
 	mux.HandleFunc("GET /api/v1/capabilities", func(w http.ResponseWriter, r *http.Request) {
+		if id := r.URL.Query().Get("viewId"); id != "" {
+			v, e := s.Queries.View(r.Context(), id)
+			if e != nil {
+				respond(w, nil, e)
+				return
+			}
+			write(w, 200, map[string]any{"viewId": v.ID, "projections": v.Projections, "profile": v.Profile})
+			return
+		}
 		features := []map[string]string{}
-		for _, name := range []string{"source_text", "symbols", "types", "compiler", "references", "git_diff", "structural_fingerprint", "configuration_graph"} {
+		for _, name := range []string{"source_text", "symbols", "types", "compiler", "references", "calls", "reads_writes", "retrieval_chunks", "lexical", "structural_fingerprint", "multilanguage_syntax", "vectors", "context", "git_diff", "configuration_graph", "cfg", "dataflow"} {
 			status := "unsupported"
-			if name == "source_text" {
+			if name == "source_text" || name == "retrieval_chunks" || name == "lexical" || name == "context" {
 				status = "ready"
 			}
-			if name == "symbols" || name == "types" {
+			if name == "symbols" || name == "types" || name == "compiler" || name == "references" || name == "calls" || name == "reads_writes" || name == "structural_fingerprint" {
 				status = "partial"
+			}
+			if name == "multilanguage_syntax" && s.Ingestion.Syntax != nil {
+				status = "partial"
+			}
+			if name == "vectors" && s.Queries.Models != nil {
+				status = "configured"
 			}
 			features = append(features, map[string]string{"name": name, "status": status})
 		}

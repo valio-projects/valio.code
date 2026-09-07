@@ -1,0 +1,1 @@
+{"name":"valio-syntax-helper","private":true,"version":"0.1.0","type":"module","scripts":{"test":"node --test"},"dependencies":{"tree-sitter-wasms":"0.1.13","web-tree-sitter":"0.20.8"}}

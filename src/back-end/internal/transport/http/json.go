@@ -52,6 +52,8 @@ func respond(w http.ResponseWriter, value any, e error) {
 		return
 	}
 	switch {
+	case errors.Is(e, fault.ErrUnavailable):
+		failure(w, 503, "CAPABILITY_UNAVAILABLE")
 	case errors.Is(e, fault.ErrNotFound):
 		failure(w, 404, "NOT_FOUND")
 	case errors.Is(e, fault.ErrForbidden):

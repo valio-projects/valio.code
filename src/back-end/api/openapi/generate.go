@@ -9,6 +9,7 @@ import (
 	"github.com/valio-projects/valio.code/internal/configuration"
 	"github.com/valio-projects/valio.code/internal/domain"
 	"github.com/valio-projects/valio.code/internal/projects"
+	"github.com/valio-projects/valio.code/internal/retrieval"
 	"github.com/valio-projects/valio.code/internal/search"
 	"os"
 	"reflect"
@@ -21,6 +22,10 @@ type schemaBuilder struct{ definitions map[string]any }
 var invalidName = regexp.MustCompile(`[^A-Za-z0-9._-]`)
 
 func (b *schemaBuilder) schema(t reflect.Type) map[string]any {
+	if t == reflect.TypeOf(json.RawMessage{}) {
+		// RawMessage is embedded JSON, never an array of numeric byte values.
+		return map[string]any{}
+	}
 	if t.Kind() == reflect.Pointer {
 		return map[string]any{"anyOf": []any{b.schema(t.Elem()), map[string]string{"type": "null"}}}
 	}
@@ -82,7 +87,7 @@ func main() {
 	paths := map[string]any{}
 	operation := func(path, method, id string, request, response any, parameters []any, public bool) {
 		responses := map[string]any{"200": map[string]any{"description": "Successful response", "content": map[string]any{"application/json": map[string]any{"schema": response}}}}
-		for _, code := range []string{"400", "401", "403", "404", "409", "413", "415", "500"} {
+		for _, code := range []string{"400", "401", "403", "404", "408", "409", "413", "415", "500", "503"} {
 			responses[code] = map[string]any{"description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success", "content": map[string]any{"application/json": map[string]any{"schema": map[string]any{"$ref": "#/components/schemas/Error"}}}}
 		}
 		op := map[string]any{"operationId": id, "responses": responses}
@@ -121,6 +126,12 @@ func main() {
 	operation("/api/v1/views", "get", "getLatestView", nil, schema(snapshots.View{}), nil, false)
 	operation("/api/v1/views/{id}", "get", "getView", nil, schema(snapshots.View{}), []any{parameter("id", "path", true)}, false)
 	operation("/api/v1/search", "post", "searchCode", schema(queries.SearchQuery{}), schema(queries.SearchResult{}), nil, false)
+	operation("/api/v1/retrieval/search", "post", "retrieveChunks", schema(queries.RetrievalQuery{}), schema(queries.RetrievalResult{}), nil, false)
+	operation("/api/v1/graph/query", "post", "queryGraph", schema(queries.GraphQuery{}), schema(queries.GraphResult{}), nil, false)
+	operation("/api/v1/context", "post", "buildContext", schema(queries.ContextQuery{}), schema(retrieval.Context{}), nil, false)
+	operation("/api/v1/embeddings/index", "post", "indexEmbeddings", schema(queries.EmbeddingCommand{}), schema(queries.EmbeddingResult{}), nil, false)
+	operation("/api/v1/ai/probe", "post", "probeAIProvider", schema(queries.ProviderProbe{}), map[string]any{"type": "object"}, nil, false)
+	operation("/api/v1/syntax/query", "post", "querySyntax", schema(queries.SyntaxQuery{}), schema(queries.SyntaxResult{}), nil, false)
 	operation("/api/v1/types", "get", "queryTypes", nil, schema(queries.TypeResult{}), []any{parameter("name", "query", true), parameter("viewId", "query", false), parameter("projectId", "query", false), parameter("buildProfileId", "query", false)}, false)
 	operation("/api/v1/files/{id}", "get", "getSourceFile", nil, schema(search.File{}), []any{parameter("id", "path", true), parameter("viewId", "query", false)}, false)
 	operation("/api/v1/capabilities", "get", "getCapabilities", nil, map[string]any{"type": "object", "properties": map[string]any{"features": map[string]any{"type": "array", "items": map[string]any{"type": "object", "properties": map[string]any{"name": map[string]string{"type": "string"}, "status": map[string]string{"type": "string"}}}}, "limits": map[string]any{"type": "object", "additionalProperties": map[string]string{"type": "integer"}}, "authentication": map[string]string{"type": "string"}, "buildProfileId": map[string]string{"type": "string"}}}, nil, false)

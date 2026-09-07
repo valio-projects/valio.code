@@ -33,6 +33,7 @@ services:
       VALIO_WORKSPACE_ID: workspace-main
       VALIO_API_ADDRESS: "0.0.0.0:8090"
       VALIO_TRUSTED_ORIGINS: "http://127.0.0.1:8080,http://localhost:8080"
+      VALIO_AI_CONFIG: /etc/valio/ai-profiles.json
       OTEL_SERVICE_NAME: valio-api
       OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
     depends_on:
@@ -40,7 +41,10 @@ services:
         condition: service_completed_successfully
       jaeger:
         condition: service_started
-    networks: [backend]
+    networks: [backend, model-access]
+    extra_hosts: ["host.docker.internal:host-gateway"]
+    volumes:
+      - ./deploy/ai-profiles.example.json:/etc/valio/ai-profiles.json:ro
     restart: unless-stopped
     read_only: true
     tmpfs: [/tmp]
@@ -135,6 +139,7 @@ services:
           cpus: "4"
           memory: 4G
 networks:
+  model-access:
   ingress:
   backend:
     internal: true

@@ -2,6 +2,7 @@ package snapshots
 
 import (
 	"encoding/json"
+	"github.com/valio-projects/valio.code/internal/domain/retrieval"
 	"github.com/valio-projects/valio.code/internal/domain/typeinfo"
 )
 
@@ -18,4 +19,10 @@ type Artifact struct {
 	Report json.RawMessage `json:"report"`
 	// Types contains rich descriptors scoped to the same view, project and syntax profile.
 	Types []typeinfo.TypeDescriptor `json:"types"`
+	// Chunks are policy-approved source slices with generated metadata kept separate.
+	Chunks []retrieval.Chunk `json:"chunks,omitempty"`
+	// Graph encodes the versioned codegraph shard owned by this file.
+	Graph json.RawMessage `json:"graph,omitempty"`
+	// Syntax stores validated non-Go AST facts; unresolved bindings remain explicit.
+	Syntax json.RawMessage `json:"syntax,omitempty"`
 }

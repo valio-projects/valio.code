@@ -98,6 +98,192 @@
         },
         "type": "object"
       },
+      "codegraph.ByteRange": {
+        "additionalProperties": false,
+        "properties": {
+          "end": {
+            "type": "integer"
+          },
+          "fileId": {
+            "type": "string"
+          },
+          "start": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "codegraph.Completeness": {
+        "additionalProperties": false,
+        "properties": {
+          "candidateWrites": {
+            "type": "integer"
+          },
+          "checkedPackages": {
+            "type": "integer"
+          },
+          "exactCalls": {
+            "type": "integer"
+          },
+          "exactReads": {
+            "type": "integer"
+          },
+          "exactReferences": {
+            "type": "integer"
+          },
+          "exactWrites": {
+            "type": "integer"
+          },
+          "inputFiles": {
+            "type": "integer"
+          },
+          "parsedFiles": {
+            "type": "integer"
+          },
+          "partialPackages": {
+            "type": "integer"
+          },
+          "truncated": {
+            "type": "boolean"
+          },
+          "unresolvedCalls": {
+            "type": "integer"
+          },
+          "unresolvedImports": {
+            "type": "integer"
+          },
+          "unresolvedReads": {
+            "type": "integer"
+          },
+          "unresolvedReferences": {
+            "type": "integer"
+          },
+          "unresolvedWrites": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "codegraph.Diagnostic": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "range": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/codegraph.ByteRange"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "codegraph.Edge": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence": {
+            "$ref": "#/components/schemas/codegraph.Evidence"
+          },
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "projectIds": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "resolution": {
+            "type": "string"
+          },
+          "sourceId": {
+            "type": "string"
+          },
+          "targetId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "codegraph.Evidence": {
+        "additionalProperties": false,
+        "properties": {
+          "origin": {
+            "type": "string"
+          },
+          "producer": {
+            "type": "string"
+          },
+          "range": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/codegraph.ByteRange"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "codegraph.Node": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence": {
+            "$ref": "#/components/schemas/codegraph.Evidence"
+          },
+          "fileId": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "projectIds": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "range": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/codegraph.ByteRange"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "repositoryId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "configgraph.Key": {
         "additionalProperties": false,
         "properties": {
@@ -437,6 +623,255 @@
         },
         "type": "object"
       },
+      "queries.ContextQuery": {
+        "additionalProperties": false,
+        "properties": {
+          "chunkId": {
+            "type": "string"
+          },
+          "maxBytes": {
+            "type": "integer"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/queries.SearchScope"
+          }
+        },
+        "type": "object"
+      },
+      "queries.EmbeddingCommand": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "type": "integer"
+          },
+          "modelProfile": {
+            "type": "string"
+          },
+          "offset": {
+            "type": "integer"
+          },
+          "representation": {
+            "type": "string"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/queries.SearchScope"
+          }
+        },
+        "type": "object"
+      },
+      "queries.EmbeddingResult": {
+        "additionalProperties": false,
+        "properties": {
+          "complete": {
+            "type": "boolean"
+          },
+          "eligible": {
+            "type": "integer"
+          },
+          "nextOffset": {
+            "type": "integer"
+          },
+          "processed": {
+            "type": "integer"
+          },
+          "profileFingerprint": {
+            "type": "string"
+          },
+          "viewId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "queries.GraphNotice": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "queries.GraphQuery": {
+        "additionalProperties": false,
+        "properties": {
+          "depth": {
+            "type": "integer"
+          },
+          "edgeKinds": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "mode": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/queries.SearchScope"
+          },
+          "sourceNodeId": {
+            "type": "string"
+          },
+          "targetNodeId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "queries.GraphResult": {
+        "additionalProperties": false,
+        "properties": {
+          "completeness": {
+            "$ref": "#/components/schemas/codegraph.Completeness"
+          },
+          "diagnostics": {
+            "items": {
+              "$ref": "#/components/schemas/codegraph.Diagnostic"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/codegraph.Edge"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/codegraph.Node"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "notices": {
+            "items": {
+              "$ref": "#/components/schemas/queries.GraphNotice"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "paths": {
+            "items": {
+              "items": {
+                "type": "string"
+              },
+              "type": [
+                "array",
+                "null"
+              ]
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string"
+          },
+          "viewId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "queries.ProviderProbe": {
+        "additionalProperties": false,
+        "properties": {
+          "modelProfile": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "queries.RetrievalQuery": {
+        "additionalProperties": false,
+        "properties": {
+          "limit": {
+            "type": "integer"
+          },
+          "mode": {
+            "type": "string"
+          },
+          "modelProfile": {
+            "type": "string"
+          },
+          "query": {
+            "type": "string"
+          },
+          "representation": {
+            "type": "string"
+          },
+          "rerank": {
+            "type": "boolean"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/queries.SearchScope"
+          },
+          "targetChunkId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "queries.RetrievalResult": {
+        "additionalProperties": false,
+        "properties": {
+          "candidateCount": {
+            "type": "integer"
+          },
+          "diagnostics": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "hits": {
+            "items": {
+              "$ref": "#/components/schemas/retrieval.ScoredChunk"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "mode": {
+            "type": "string"
+          },
+          "truncated": {
+            "type": "boolean"
+          },
+          "viewId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "queries.SearchQuery": {
         "additionalProperties": false,
         "properties": {
@@ -515,6 +950,61 @@
         },
         "type": "object"
       },
+      "queries.SyntaxFile": {
+        "additionalProperties": false,
+        "properties": {
+          "fileId": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "report": {},
+          "repositoryId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "queries.SyntaxQuery": {
+        "additionalProperties": false,
+        "properties": {
+          "fileId": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/queries.SearchScope"
+          }
+        },
+        "type": "object"
+      },
+      "queries.SyntaxResult": {
+        "additionalProperties": false,
+        "properties": {
+          "reports": {
+            "items": {
+              "$ref": "#/components/schemas/queries.SyntaxFile"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string"
+          },
+          "viewId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "queries.TypeResult": {
         "additionalProperties": false,
         "properties": {
@@ -535,6 +1025,183 @@
           },
           "viewId": {
             "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "retrieval.ChannelScore": {
+        "additionalProperties": false,
+        "properties": {
+          "channel": {
+            "type": "string"
+          },
+          "rank": {
+            "type": "integer"
+          },
+          "score": {
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "retrieval.Chunk": {
+        "additionalProperties": false,
+        "properties": {
+          "end": {
+            "type": "integer"
+          },
+          "fallback": {
+            "type": "boolean"
+          },
+          "fileId": {
+            "type": "string"
+          },
+          "header": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "string"
+          },
+          "projectIds": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "repositoryId": {
+            "type": "string"
+          },
+          "representations": {
+            "items": {
+              "$ref": "#/components/schemas/retrieval.Representation"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "split": {
+            "type": "boolean"
+          },
+          "start": {
+            "type": "integer"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "retrieval.Context": {
+        "additionalProperties": false,
+        "properties": {
+          "byteCount": {
+            "type": "integer"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/retrieval.ContextItem"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "omitted": {
+            "items": {
+              "$ref": "#/components/schemas/retrieval.ContextOmission"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "viewId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "retrieval.ContextItem": {
+        "additionalProperties": false,
+        "properties": {
+          "chunkId": {
+            "type": "string"
+          },
+          "end": {
+            "type": "integer"
+          },
+          "fileId": {
+            "type": "string"
+          },
+          "header": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "string"
+          },
+          "profile": {
+            "type": "string"
+          },
+          "start": {
+            "type": "integer"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "retrieval.ContextOmission": {
+        "additionalProperties": false,
+        "properties": {
+          "chunkId": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "retrieval.Representation": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "retrieval.ScoredChunk": {
+        "additionalProperties": false,
+        "properties": {
+          "chunk": {
+            "$ref": "#/components/schemas/retrieval.Chunk"
+          },
+          "provenance": {
+            "items": {
+              "$ref": "#/components/schemas/retrieval.ChannelScore"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "score": {
+            "type": "number"
           }
         },
         "type": "object"
@@ -1953,6 +2620,133 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/ai/probe": {
+      "post": {
+        "operationId": "probeAIProvider",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/queries.ProviderProbe"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      }
+    },
     "/api/v1/capabilities": {
       "get": {
         "operationId": "getCapabilities",
@@ -2035,6 +2829,16 @@
             },
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
           "409": {
             "content": {
               "application/json": {
@@ -2066,6 +2870,270 @@
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      }
+    },
+    "/api/v1/context": {
+      "post": {
+        "operationId": "buildContext",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/queries.ContextQuery"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/retrieval.Context"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      }
+    },
+    "/api/v1/embeddings/index": {
+      "post": {
+        "operationId": "indexEmbeddings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/queries.EmbeddingCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/queries.EmbeddingResult"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -2150,6 +3218,16 @@
             },
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
           "409": {
             "content": {
               "application/json": {
@@ -2181,6 +3259,143 @@
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      }
+    },
+    "/api/v1/graph/query": {
+      "post": {
+        "operationId": "queryGraph",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/queries.GraphQuery"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/queries.GraphResult"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -2257,6 +3472,16 @@
             },
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
           "409": {
             "content": {
               "application/json": {
@@ -2288,6 +3513,16 @@
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -2362,6 +3597,16 @@
             },
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
           "409": {
             "content": {
               "application/json": {
@@ -2393,6 +3638,16 @@
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -2467,6 +3722,16 @@
             },
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
           "409": {
             "content": {
               "application/json": {
@@ -2498,6 +3763,16 @@
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -2574,6 +3849,16 @@
             },
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
           "409": {
             "content": {
               "application/json": {
@@ -2605,6 +3890,16 @@
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -2689,6 +3984,16 @@
             },
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
           "409": {
             "content": {
               "application/json": {
@@ -2720,6 +4025,16 @@
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -2794,6 +4109,16 @@
             },
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
           "409": {
             "content": {
               "application/json": {
@@ -2825,6 +4150,16 @@
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -2899,6 +4234,16 @@
             },
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
           "409": {
             "content": {
               "application/json": {
@@ -2930,6 +4275,143 @@
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
+      }
+    },
+    "/api/v1/retrieval/search": {
+      "post": {
+        "operationId": "retrieveChunks",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/queries.RetrievalQuery"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/queries.RetrievalResult"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -3006,6 +4488,16 @@
             },
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
           "409": {
             "content": {
               "application/json": {
@@ -3037,6 +4529,16 @@
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -3103,6 +4605,16 @@
             },
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
           "409": {
             "content": {
               "application/json": {
@@ -3134,6 +4646,16 @@
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -3229,6 +4751,16 @@
             },
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
           "409": {
             "content": {
               "application/json": {
@@ -3268,9 +4800,146 @@
               }
             },
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           }
         },
         "security": []
+      }
+    },
+    "/api/v1/syntax/query": {
+      "post": {
+        "operationId": "querySyntax",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/queries.SyntaxQuery"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/queries.SyntaxResult"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
       }
     },
     "/api/v1/types": {
@@ -3361,6 +5030,16 @@
             },
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
           "409": {
             "content": {
               "application/json": {
@@ -3392,6 +5071,16 @@
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -3458,6 +5147,16 @@
             },
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
           "409": {
             "content": {
               "application/json": {
@@ -3489,6 +5188,16 @@
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -3565,6 +5274,16 @@
             },
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
           "409": {
             "content": {
               "application/json": {
@@ -3596,6 +5315,16 @@
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -3662,6 +5391,16 @@
             },
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
           "409": {
             "content": {
               "application/json": {
@@ -3693,6 +5432,16 @@
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -3759,6 +5508,16 @@
             },
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
           "409": {
             "content": {
               "application/json": {
@@ -3790,6 +5549,16 @@
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
@@ -3857,6 +5626,16 @@
             },
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
           "409": {
             "content": {
               "application/json": {
@@ -3888,6 +5667,16 @@
             "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
           },
           "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
             "content": {
               "application/json": {
                 "schema": {
