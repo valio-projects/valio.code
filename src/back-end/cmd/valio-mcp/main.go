@@ -5,6 +5,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"github.com/valio-projects/valio.code/internal/configuration"
 	"github.com/valio-projects/valio.code/internal/transport/mcp"
 	"os"
 	"os/signal"
@@ -12,13 +13,13 @@ import (
 
 func main() {
 	if len(os.Args) < 2 || os.Args[1] != "serve" {
-		fmt.Fprintln(os.Stderr, "usage: valio-mcp serve --server URL (VALIO_API_TOKEN required)")
+		fmt.Fprintln(os.Stderr, "usage: valio-mcp serve --server URL (uses the local development token unless VALIO_API_TOKEN is set)")
 		os.Exit(2)
 	}
 	flags := flag.NewFlagSet("serve", flag.ExitOnError)
-	server := flags.String("server", "http://127.0.0.1:8080", "valio API origin")
+	server := flags.String("server", configuration.DefaultServerURL, "valio API origin")
 	_ = flags.Parse(os.Args[2:])
-	bridge, err := mcp.NewBridge(*server, os.Getenv("VALIO_API_TOKEN"))
+	bridge, err := mcp.NewBridge(*server, configuration.ApplicationToken())
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

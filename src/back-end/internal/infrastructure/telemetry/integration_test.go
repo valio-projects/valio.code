@@ -30,7 +30,7 @@ func TestJaegerExport(t *testing.T) {
 	}
 	client := http.Client{Timeout: time.Second}
 	for ctx.Err() == nil {
-		res, err := client.Get("http://127.0.0.1:16686/api/traces/" + traceID)
+		res, err := client.Get("http://127.0.0.1:16687/api/traces/" + traceID)
 		if err == nil {
 			var body struct {
 				Data []json.RawMessage `json:"data"`

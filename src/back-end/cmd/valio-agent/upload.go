@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"flag"
 	"io"
-	"os"
 
 	"github.com/valio-projects/valio.code/internal/agent"
+	"github.com/valio-projects/valio.code/internal/configuration"
 )
 
 type uploadFlags struct{ server, workspace, repository *string }
@@ -17,7 +17,7 @@ func registerUploadFlags(fs *flag.FlagSet) uploadFlags {
 }
 func (f uploadFlags) Enabled() bool { return *f.server != "" }
 func (f uploadFlags) Upload(ctx context.Context, s agent.Snapshot, out io.Writer) error {
-	client := agent.UploadClient{Options: agent.UploadOptions{Endpoint: *f.server, Token: os.Getenv("VALIO_API_TOKEN"), WorkspaceID: *f.workspace, RepositoryID: *f.repository}}
+	client := agent.UploadClient{Options: agent.UploadOptions{Endpoint: *f.server, Token: configuration.ApplicationToken(), WorkspaceID: *f.workspace, RepositoryID: *f.repository}}
 	result, e := client.Upload(ctx, s)
 	if e != nil {
 		return e

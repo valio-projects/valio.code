@@ -1,7 +1,7 @@
-# Only integration tests publish the database, on loopback and an alternate port.
+# Use -p valio-code-test to keep tests separate from the running local stack.
 services:
   jaeger:
-    ports: ["127.0.0.1:14318:4318"]
+    ports: !override ["127.0.0.1:14318:4318", "127.0.0.1:16687:16686"]
   surrealdb:
     ports: ["127.0.0.1:18000:8000"]
 networks:

@@ -35,13 +35,6 @@ func run() error {
 	if err = db.Migrate(ctx); err != nil {
 		return err
 	}
-	for _, role := range []struct{ name, env string }{{"valio_api", "VALIO_API_DB_PASSWORD"}, {"valio_worker", "VALIO_WORKER_DB_PASSWORD"}} {
-		if password := os.Getenv(role.env); password != "" {
-			if err = db.ProvisionUser(ctx, role.name, password, "EDITOR"); err != nil {
-				return err
-			}
-		}
-	}
 	fmt.Println("Database schema migrated:", db.Database())
 	return nil
 }

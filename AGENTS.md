@@ -5,6 +5,8 @@ Preserve the existing AGPL-3.0 license, Git remote, and user changes.
 - SurrealDB is the only persistent application store and runs through Docker Compose.
 - Keep Workspace, Project, Repository, Worktree, and Deployment distinct.
 - Organize Go as focused packages and files with structs, methods and interfaces.
+  Backend source and its Go module live in `src/back-end`; frontend lives in
+  `src/front-end`. Use `git mv` for tracked file and directory moves/renames.
   Separate models, parsers, readers, writers, mappers, builders and adapters by
   responsibility. CLI entrypoints only wire dependencies and dispatch commands.
   Use design patterns at actual IO/algorithm boundaries; avoid giant files and
@@ -39,4 +41,7 @@ Preserve the existing AGPL-3.0 license, Git remote, and user changes.
   useful GoDoc: meaning, units, invariants, unknown states, side effects and guarantees.
 
 Tools installed for this Windows workspace are ignored under `.tools/`; use an installed
-Go 1.26 toolchain or `.tools/go/bin/go.exe`. Do not commit tool binaries or local credentials.
+Go 1.26 toolchain or `.tools/go/bin/go.exe -C src/back-end`. Do not commit tool binaries
+or private credentials. Compose deliberately contains public local example credentials:
+one database account `root` / `valio` for all components; no setup script is required.
+Documentation is maintained in parallel under `docs/en` and `docs/ru`.

@@ -1,7 +1,7 @@
 # Local bootstrap HTTP contract
 
 `openapi.json` is generated from the actual Go request, response and rich type
-models. Regenerate it from the repository root with `go run ./api/openapi`.
+models. From `src/back-end`, regenerate it with `go run ./api/openapi`.
 
 The API uses one database-bound workspace (`VALIO_WORKSPACE_ID`, default
 `workspace-main`). A caller explicitly registers repository IDs, then creates
@@ -9,10 +9,14 @@ project definitions and their repository source roots before uploading sanitized
 agent snapshots. Project keys and identity are immutable; display names and roots
 can change. Published views retain their original definitions and memberships.
 
-Configure `VALIO_API_TOKEN` with at least 32 characters and the database-level
-`VALIO_DB_PASSWORD`. HTTP listens at `127.0.0.1:8090` unless
-`VALIO_API_ADDRESS` is set. `VALIO_TRUSTED_ORIGINS` accepts comma-separated exact
-browser origins. Bearer authentication supports CLI clients; browser login sets
+The local stack defaults to the root SurrealDB user and password `valio` at
+`http://127.0.0.1:18000`, namespace `valio`, database `workspace_main`, and
+the development token `valio-local-development-token-0001`. `VALIO_DB_*` and
+`VALIO_API_TOKEN` override these values. HTTP listens at `127.0.0.1:8090` unless
+`VALIO_API_ADDRESS` is set. By default, browser commands from
+`http://localhost:8080` and `http://127.0.0.1:8080` are trusted;
+`VALIO_TRUSTED_ORIGINS` accepts a comma-separated replacement list. Bearer
+authentication supports CLI clients; browser login sets
 an expiring, signed, HttpOnly, SameSite=Strict cookie without persisting the
 bootstrap token in browser storage. Cookie mutations require a trusted Origin.
 Sessions expire after eight hours and reset when the API restarts. Logout clears

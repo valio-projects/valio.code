@@ -7,18 +7,21 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: web
+        working-directory: src/front-end
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '26.8.1'
           cache: npm
-          cache-dependency-path: web/package-lock.json
+          cache-dependency-path: src/front-end/package-lock.json
       - run: npm ci
       - run: npm test
       - run: npm run build
   go:
+    defaults:
+      run:
+        working-directory: src/back-end
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
@@ -40,14 +43,11 @@ jobs:
         with:
           go-version: '1.26.8'
           cache: false
-      - run: sh scripts/setup.sh
-      - run: docker compose -f compose.yaml -f deploy/compose.test.yaml up -d --wait surrealdb jaeger
+      - run: docker compose -p valio-code-test -f compose.yaml -f deploy/compose.test.yaml up -d --wait surrealdb jaeger
       - name: Real database integration
         shell: bash
         run: |
-          set -a
-          source .env
-          set +a
-          VALIO_TEST_DB_URL=http://127.0.0.1:18000 VALIO_TEST_DB_PASSWORD="$SURREAL_ROOT_PASSWORD" VALIO_TEST_OTLP_URL=http://127.0.0.1:14318 go test ./...
+          cd src/back-end
+          VALIO_TEST_DB_URL=http://127.0.0.1:18000 VALIO_TEST_DB_PASSWORD=valio VALIO_TEST_OTLP_URL=http://127.0.0.1:14318 go test ./...
       - if: always()
-        run: docker compose -f compose.yaml -f deploy/compose.test.yaml down
+        run: docker compose -p valio-code-test -f compose.yaml -f deploy/compose.test.yaml down

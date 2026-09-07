@@ -1,9 +1,9 @@
 # syntax=docker/dockerfile:1.7
 FROM golang:1.26.8-bookworm@sha256:9fdc884aacc3bec89b20ffc69f4bb369c78210e3e4f600387b5128b12c199f81 AS build
 WORKDIR /src
-COPY go.mod go.sum ./
+COPY src/back-end/go.mod src/back-end/go.sum ./
 RUN go mod download
-COPY . .
+COPY src/back-end/ ./
 ARG TARGETOS=linux
 ARG TARGETARCH=amd64
 ARG VERSION=development

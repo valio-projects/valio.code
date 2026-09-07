@@ -61,7 +61,7 @@ func (u UploadClient) Upload(ctx context.Context, s Snapshot) (UploadResult, err
 		return UploadResult{}, err
 	}
 	if strings.TrimSpace(opts.Token) == "" || strings.ContainsAny(opts.Token, "\r\n") {
-		return UploadResult{}, errors.New("VALIO_API_TOKEN is required and must be a single-line token")
+		return UploadResult{}, errors.New("upload token is required and must be a single-line token")
 	}
 	if opts.WorkspaceID == "" || opts.RepositoryID == "" {
 		return UploadResult{}, errors.New("workspace and repository IDs are required")
