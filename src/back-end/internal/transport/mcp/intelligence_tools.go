@@ -7,6 +7,10 @@ import (
 )
 
 func registerIntelligenceTools(server *mcp.Server, service queries.Service) {
+	mcp.AddTool(server, &mcp.Tool{Name: "structure_graph", Description: "Explore source-backed declaration, member and parameter containment for C/C++/C#/Java/JS/TS in a pinned view. Import and call target resolution remains unavailable."}, func(ctx context.Context, _ *mcp.CallToolRequest, input queries.StructureQuery) (*mcp.CallToolResult, Output, error) {
+		value, err := service.Structure(ctx, input)
+		return nil, Output{Data: value}, err
+	})
 	mcp.AddTool(server, &mcp.Tool{Name: "retrieval_search", Description: "Rank immutable source chunks using lexical BM25, symbol, structural, semantic or hybrid retrieval; return channel evidence and missing capabilities."}, func(ctx context.Context, _ *mcp.CallToolRequest, input queries.RetrievalQuery) (*mcp.CallToolResult, Output, error) {
 		v, e := service.Retrieve(ctx, input)
 		return nil, Output{Data: v}, e

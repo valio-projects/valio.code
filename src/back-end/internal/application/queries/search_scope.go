@@ -7,7 +7,7 @@ type SearchScope struct {
 	// WorkspaceID binds this value to the single configured workspace.
 	WorkspaceID domain.WorkspaceID `json:"workspaceId"`
 	// ProjectIDs lists the selected or pinned many-to-many project memberships.
-	ProjectIDs []string `json:"projectIds"`
+	ProjectIDs []string `json:"projectIds,omitempty"`
 	// ViewID pins the immutable analysis version; an empty query value resolves latest once.
-	ViewID string `json:"viewId"`
+	ViewID string `json:"viewId,omitempty"`
 }

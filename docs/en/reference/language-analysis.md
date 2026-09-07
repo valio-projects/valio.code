@@ -1,69 +1,76 @@
 # Language analysis
 
-Valio indexes C, C++, C#, Java, JavaScript, and TypeScript as source files and
-adds a syntax report for each supported file when the syntax helper is enabled.
-The report is an AST observation, not a compiler result. It makes written
-declarations useful across repositories while keeping unresolved information
-explicit.
+`valio.code` records source-backed type and structure facts for Go, C, C++,
+C#, Java, JavaScript, TypeScript, TSX and JSX in an immutable view. The result
+is useful navigation evidence. It is not compiler output for the non-Go
+languages.
 
-## What happens during indexing
+## From syntax to a pinned view
 
-1. `valio-agent index` captures a Git worktree, applies the source and
-   configuration policy, and uploads the accepted snapshot.
-2. The API assigns immutable file and view identities. Supported source files
-   are sent to the bundled Tree-sitter WebAssembly helper.
-3. The report is validated against the submitted path and original UTF-8 byte
-   length, then stored with the immutable artifact in SurrealDB.
-4. A pinned view serves ordinary source and symbol search, plus the dedicated
-   syntax query. The query returns the report that was stored for that view;
-   it does not parse a developer's current working tree.
+The Tree-sitter helper produces a typed syntax report for each supported file.
+Before it is used, the API validates the report schema, UTF-8 byte ranges,
+declaration IDs, parent links and the required syntax-only capability. The same
+validated report feeds the type catalog, method chunks and structure graph for
+one pinned view.
 
-The source-search DSL remains useful for exact source and symbol discovery. For
-example, `symbol:User` searches written symbols in the selected immutable view.
-Use the syntax query when the caller needs a declaration outline or written
-member metadata.
+```mermaid
+flowchart LR
+    R["Validated typed syntax report"] --> T["Type catalog\n/types · type_query"]
+    R --> C["Method AST chunks\nbounded parent context"]
+    R --> G["Structure graph\n/structure/graph · structure_graph"]
+    T --> V["Pinned immutable view"]
+    C --> V
+    G --> V
+```
+
+This fan-out does not parse a current worktree during a read. A new upload
+creates a new view; existing views retain their original evidence.
+
+## Type catalog and structure graph
+
+`GET /api/v1/types` and the MCP `type_query` tool read TypeDescriptors from Go
+and the syntax adapters for C, C++, C#, Java, JavaScript and TypeScript,
+including TSX/JSX where their host language applies. A descriptor can expose a
+written class, struct, interface or enum; fields, properties, methods,
+parameters, written return types, modifiers and visibility. Attribute lists are
+kept as evidence-backed raw syntax. A C# enum's explicitly written underlying
+type is retained.
+
+`POST /api/v1/structure/graph` and MCP `structure_graph` expose declaration,
+member and parameter containment. They also retain import and call observations
+as explicitly unresolved. The graph answers where a written declaration sits in
+the file; it does not prove what an import or a call resolves to.
 
 ## Supported paths
 
-| Extension | Indexed language | Syntax grammar |
-| --- | --- | --- |
-| `.c`, `.h` | C | C |
-| `.cpp`, `.cc`, `.cxx`, `.hpp`, `.hxx`, `.hh` | C++ | C++ |
-| `.cs` | C# | C# |
-| `.java` | Java | Java |
-| `.js`, `.mjs`, `.cjs`, `.jsx` | JavaScript | JavaScript; JSX for `.jsx` |
-| `.ts`, `.mts`, `.cts`, `.tsx` | TypeScript | TypeScript; TSX for `.tsx` |
+| Extension | Indexed language |
+| --- | --- |
+| `.c`, `.h` | C |
+| `.cpp`, `.cc`, `.cxx`, `.hpp`, `.hxx`, `.hh` | C++ |
+| `.cs` | C# |
+| `.java` | Java |
+| `.js`, `.mjs`, `.cjs`, `.jsx` | JavaScript; JSX for `.jsx` |
+| `.ts`, `.mts`, `.cts`, `.tsx` | TypeScript; TSX for `.tsx` |
 
-`.h` deliberately defaults to C. A C++ header is ambiguous without a compiler
-configuration, so Valio does not guess that it is C++. Other extensions remain
-source text with the `text` language fallback and receive no syntax report.
+`.h` defaults to C because a header alone does not establish C++ language mode.
+Other files remain source text and do not receive a syntax report.
 
-## Syntax report evidence
+## Boundaries
 
-Reports use original, half-open UTF-8 byte ranges. They include classes,
-interfaces, structs, enums and enum members, fields, properties, functions,
-methods, their parent relationship, declared types where written, parameters,
-visibility, modifiers, and direct attributes. Attribute lists preserve their
-written literal syntax, including C# attribute targets and arguments. C# enums
-also expose `underlyingType` only when the declaration explicitly writes a base
-type such as `byte`.
+Go retains its partial local cross-file analysis through `go/types`; external
+packages and every build-tag configuration are not guaranteed. The syntax
+adapters for other languages do not resolve types, imports, aliases, overloads,
+inheritance, cross-file calls, ABI/layout, CFG or data flow. Their symbol links
+remain unresolved.
 
-Identifier observations and syntactic calls have `resolution: "unresolved"`.
-C# `using` directives and TypeScript import statements are retained as
-syntax-only imports. This is useful navigation evidence, but it is not a claim
-that an import, call, type name, or enum use resolves to one particular symbol.
+An enum expression such as `1 << 2` is preserved as a written expression. It
+is not presented as an evaluated constant value. Missing generic information,
+implicit enum values and physical layout remain unknown.
 
-The report does not infer layout, offsets, alignment, overload selection,
-inheritance, aliases, cross-file symbols, call targets, exact enum usages, or
-control-flow/data-flow graphs. An absent field is unknown rather than evidence
-that it does not exist.
+## Index and query a pinned view
 
-## Querying a pinned view
-
-From the repository root, create or refresh a view with the native agent:
-
-First register `example-repository` and `example-project` (with its source root)
-in the running API or web interface. The path must be an existing Git worktree.
+Register a repository and project with its source root, then index an existing
+Git worktree from the repository root:
 
 ```powershell
 $env:VALIO_API_TOKEN = 'valio-local-development-token-0001'
@@ -73,30 +80,15 @@ go -C src/back-end run ./cmd/valio-agent index `
   --repository example-repository
 ```
 
-Keep the returned `viewId` and use it in every read. This PowerShell request
-finds files whose stored syntax report contains the written name `User`:
-
-```powershell
-$headers = @{ Authorization = 'Bearer valio-local-development-token-0001' }
-$body = @{
-  scope = @{ workspaceId = 'workspace-main'; projectIds = @('example-project'); viewId = 'pinned-view-id' }
-  name = 'User'
-} | ConvertTo-Json -Depth 6
-Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8080/api/v1/syntax/query `
-  -Headers $headers -ContentType 'application/json' -Body $body
-```
-
-The MCP tool is `syntax_query`. Supply the same `scope` and optional `name` or
-`fileId`; for example, a client sends
-`{"scope":{"workspaceId":"workspace-main","projectIds":["example-project"],"viewId":"pinned-view-id"},"name":"User"}`.
-The legacy `GET /api/v1/types` endpoint remains Go-only. It is not a fallback
-for C, C++, C#, JavaScript, or TypeScript type resolution.
+Keep the returned `viewId` for subsequent reads. `syntax_query` takes that same
+scope and can filter by written name or file ID. The HTTP equivalent is
+`POST /api/v1/syntax/query`; `GET /api/v1/types` and `type_query` now read the
+multi-language descriptor catalog rather than a Go-only catalog.
 
 ## Enabling the native helper
 
-Docker Compose includes the Node runtime and helper dependencies. For a native
-API process, install Node.js 26.8.1, then prepare the helper before starting
-the API:
+Docker Compose includes Node and the helper dependencies. For a native API
+process, install Node.js 26.8.1 and prepare the helper before API startup:
 
 ```powershell
 Push-Location src/back-end/analyzers/syntax
@@ -108,26 +100,39 @@ $env:VALIO_NODE_BINARY = 'node'
 go -C src/back-end run ./cmd/valio-api
 ```
 
-`VALIO_SYNTAX_HELPER` is read at API startup. The startup probe loads the
-TypeScript grammar, so a missing Node executable, incompatible grammar asset,
-or unavailable parser stops startup. During ingestion, a helper failure stops
-publication rather than creating a view that pretends to contain syntax
-evidence. Parse diagnostics from invalid source remain explicit in a stored
-partial report.
+The helper is configured at API startup. Its startup probe loads a grammar, so
+a missing Node executable, incompatible grammar asset or unavailable helper
+prevents the API from claiming syntax support. A helper failure during indexing
+stops publication; parse diagnostics remain explicit in a stored partial report.
+Reindex to add syntax facts to a new view; prior views are immutable.
 
-Views created before syntax analysis was enabled have no retroactive reports.
-Index the source again to create a new view after enabling the helper.
+## Verified checks
 
-## Acceptance checks
+Windows passed `go test ./... -count=1` and `go vet ./...` with real SurrealDB
+3.2.4 and Jaeger, including syntax integration. Docker built API, worker and
+migration images and healthy Compose services. Linux Docker passed
+`go test -race ./...`; database-dependent tests are skipped in that Linux build.
 
-Run the repository checks from the root:
+`scripts/smoke.ps1` passed seven rich user types, six non-Go structure graphs,
+syntax search, Go graph reads, policy handling and idempotence. The smoke used
+`qwen3-8b-lmstudio-docker` (Q8_0, 4096 dimensions), persisted 29 code embeddings
+and ran semantic/hybrid retrieval in project `demo-6ebf95f8fc7e`, view
+`7e6eddbb4543be8e0bb330ecd5ab65f81c6ce9cdf3b1019da69a767f52f7e93f`.
+The earlier pinned view created with `87d2c0b` still returns one Go type candidate and five
+lexical hits. These checks do not measure retrieval quality or establish
+compiler semantics.
+
+After smoke, reproduce live MCP/HTTP agreement with the project and view IDs in
+the smoke receipt:
 
 ```powershell
-.\scripts\test-integration.ps1
-.\scripts\smoke.ps1
+$env:VALIO_TEST_API_URL = 'http://127.0.0.1:8080'
+$env:VALIO_TEST_API_TOKEN = 'valio-local-development-token-0001'
+$env:VALIO_TEST_PROJECT_ID = 'project-id-from-smoke-receipt'
+$env:VALIO_TEST_VIEW_ID = 'view-id-from-smoke-receipt'
+go -C src/back-end test ./internal/transport/mcp -run TestLiveHTTPMCPAgreement -count=1
 ```
 
-The integration script installs the helper dependencies and runs its grammar
-fixtures. The smoke scenario uploads a small multi-language fixture and checks
-source and symbol search, syntax reports, retrieval/context, and local Go graph
-evidence against its returned pinned view.
+The test compares `structure_graph`, `type_query`, `code_search`,
+`retrieval_search` and `symbol_search`; optional MCP fields now use the same
+defaults as HTTP.

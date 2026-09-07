@@ -14,6 +14,7 @@ func (s *Server) registerIntelligence(mux *http.ServeMux) {
 	bindJSON(mux, "POST /api/v1/embeddings/index", s.Queries.IndexEmbeddings)
 	bindJSON(mux, "POST /api/v1/ai/probe", s.Queries.ProbeProvider)
 	bindJSON(mux, "POST /api/v1/syntax/query", s.Queries.Syntax)
+	bindJSON(mux, "POST /api/v1/structure/graph", s.Queries.Structure)
 }
 
 func bindJSON[Input, Output any](mux *http.ServeMux, pattern string, handler func(context.Context, Input) (Output, error)) {

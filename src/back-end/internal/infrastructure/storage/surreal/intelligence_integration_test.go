@@ -88,6 +88,23 @@ func TestIntelligencePublicationThroughSurreal(t *testing.T) {
 	}
 	service := queries.Service{Store: store, WorkspaceID: workspace.ID, Models: integrationModels{}, Vectors: vectors}
 	scope := queries.SearchScope{WorkspaceID: workspace.ID, ViewID: receipt.ViewID, ProjectIDs: []string{"billing"}}
+	persistedView, e := store.View(ctx, receipt.ViewID)
+	if e != nil {
+		t.Fatal(e)
+	}
+	persistedArtifacts, e := store.Artifacts(ctx, persistedView)
+	if e != nil {
+		t.Fatal(e)
+	}
+	for _, artifact := range persistedArtifacts {
+		for _, chunk := range artifact.Chunks {
+			for _, file := range persistedView.Files {
+				if file.ID == chunk.FileID && (chunk.Start < 0 || chunk.End < chunk.Start || chunk.End > file.Size || chunk.Text != "" && len(chunk.Text) != chunk.End-chunk.Start) {
+					t.Fatalf("persisted fixture chunk range: file=%s sourceSize=%d range=%d:%d textBytes=%d kind=%s text=%q", file.Path, file.Size, chunk.Start, chunk.End, len(chunk.Text), chunk.Kind, chunk.Text)
+				}
+			}
+		}
+	}
 	if ingester.Syntax != nil {
 		written, e := service.Syntax(ctx, queries.SyntaxQuery{Scope: scope, Name: "User"})
 		if e != nil || len(written.Reports) != 6 {
@@ -96,6 +113,23 @@ func TestIntelligencePublicationThroughSurreal(t *testing.T) {
 		found, e := service.Search(ctx, queries.SearchQuery{Scope: scope, Query: "symbol:User"})
 		if e != nil || found.Total != 6 {
 			t.Fatalf("multi-language symbol metadata: %+v %v", found, e)
+		}
+		descriptors, e := service.Types(ctx, queries.TypeQuery{Name: "User", ViewID: receipt.ViewID, ProjectID: "billing"})
+		if e != nil || len(descriptors.Candidates) != 6 {
+			t.Fatalf("multi-language type catalog: %d %v", len(descriptors.Candidates), e)
+		}
+		outline, e := service.Structure(ctx, queries.StructureQuery{Scope: scope, Name: "User", Depth: 3})
+		if e != nil || len(outline.Files) != 6 || outline.Truncated {
+			t.Fatalf("multi-language structure: %+v %v", outline, e)
+		}
+		for _, file := range outline.Files {
+			if len(file.Nodes) < 2 || len(file.Edges) == 0 {
+				t.Fatalf("missing type members in %s", file.Path)
+			}
+		}
+		chunks, e := service.Retrieve(ctx, queries.RetrievalQuery{Scope: scope, Mode: "symbol", Query: "User"})
+		if e != nil || len(chunks.Hits) < 6 {
+			t.Fatalf("syntax symbol representations: %d %v", len(chunks.Hits), e)
 		}
 	}
 	graph, err := service.Graph(ctx, queries.GraphQuery{Scope: scope, Mode: queries.GraphSymbols, Name: "Save"})
@@ -114,9 +148,23 @@ func TestIntelligencePublicationThroughSurreal(t *testing.T) {
 	if err != nil || len(bundle.Items) == 0 || bundle.ViewID != receipt.ViewID {
 		t.Fatalf("context %+v %v", bundle, err)
 	}
-	indexed, err := service.IndexEmbeddings(ctx, queries.EmbeddingCommand{Scope: scope, ModelProfile: "test", Limit: 16})
-	if err != nil || indexed.Processed == 0 || !indexed.Complete {
-		t.Fatalf("index %+v %v", indexed, err)
+	offset, complete := 0, false
+	for page := 0; page < 10; page++ {
+		indexed, err := service.IndexEmbeddings(ctx, queries.EmbeddingCommand{Scope: scope, ModelProfile: "test", Limit: 16, Offset: offset})
+		if err != nil || indexed.Processed == 0 {
+			t.Fatalf("index %+v %v", indexed, err)
+		}
+		if indexed.Complete {
+			complete = true
+			break
+		}
+		if indexed.NextOffset <= offset {
+			t.Fatal("embedding page made no progress")
+		}
+		offset = indexed.NextOffset
+	}
+	if !complete {
+		t.Fatal("fixture exceeded embedding page budget")
 	}
 	semantic, err := service.Retrieve(ctx, queries.RetrievalQuery{Scope: scope, Mode: "semantic", Query: "billing", ModelProfile: "test"})
 	if err != nil || len(semantic.Hits) == 0 {

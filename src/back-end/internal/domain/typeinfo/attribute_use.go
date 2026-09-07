@@ -4,6 +4,10 @@ package typeinfo
 type AttributeUse struct {
 	// ID distinguishes this application from other uses of the same class.
 	ID string `json:"id"`
+	// RawSyntax retains a complete annotation list when the producer cannot
+	// safely split its class name or arguments. It is source evidence, not an
+	// evaluated attribute argument.
+	RawSyntax *Fact[string] `json:"rawSyntax,omitempty"`
 	// Name is the source-level attribute name when available.
 	Name Fact[string] `json:"name"`
 	// AttributeClass resolves the annotation's declaring symbol when possible.

@@ -76,12 +76,16 @@ func (s Service) Ingest(ctx context.Context, c IngestCommand) (IngestResult, err
 	p.Snapshot = Metadata{ID: Digest([]string{string(s.WorkspaceID), string(r.ID), c.Snapshot.ID}), AgentSnapshotID: c.Snapshot.ID, WorkspaceID: s.WorkspaceID, RepositoryID: r.ID, Repository: c.Snapshot.Repository, Config: c.Snapshot.Config, Diagnostics: c.Snapshot.Diagnostics}
 	files := []projects.SourceFile{}
 	contents := map[string]string{}
-	v := View{WorkspaceID: s.WorkspaceID, SnapshotID: p.Snapshot.ID, Projects: defs, ProjectRevisions: []domain.ProjectRevisionRef{}, Repositories: []domain.RepositorySnapshot{}, Files: []FileRef{}, Profile: "go-ast-syntax/v2;go-codegraph/v2;chunks/v1;syntax-default", Status: "partial", Projections: projectionStatus()}
+	v := View{WorkspaceID: s.WorkspaceID, SnapshotID: p.Snapshot.ID, Projects: defs, ProjectRevisions: []domain.ProjectRevisionRef{}, Repositories: []domain.RepositorySnapshot{}, Files: []FileRef{}, Profile: "go-ast-syntax/v2;go-codegraph/v2;chunks/v2;syntax-types/v1;syntax-structure/v1;syntax-default", Status: "partial", Projections: projectionStatus()}
 	if s.Syntax != nil {
 		v.Profile += ";" + s.Syntax.Profile()
 		v.Projections["multilanguage_syntax"] = "partial"
+		v.Projections["multilanguage_types"] = "partial"
+		v.Projections["syntax_structure"] = "partial"
 	} else {
 		v.Projections["multilanguage_syntax"] = "unsupported"
+		v.Projections["multilanguage_types"] = "unsupported"
+		v.Projections["syntax_structure"] = "unsupported"
 	}
 	for _, old := range previous.Repositories {
 		if old.RepositoryID != r.ID {
@@ -180,11 +184,9 @@ func (s Service) Ingest(ctx context.Context, c IngestCommand) (IngestResult, err
 		artifact.Chunks = chunks[f.ID]
 		artifact.Graph = graphs[f.ID]
 		if s.Syntax != nil && supportedSyntax(f.Language) {
-			syntax, err := s.Syntax.Analyze(ctx, f.Path, f.Language, contents[f.ID])
-			if err != nil {
+			if err := (syntaxArtifactProcessor{analyzer: s.Syntax}).Process(ctx, v, f, contents[f.ID], &artifact); err != nil {
 				return result, err
 			}
-			artifact.Syntax = syntax
 		}
 		for _, projectID := range f.ProjectIDs {
 			if f.Language != "go" {

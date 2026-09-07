@@ -1,66 +1,70 @@
 # valio.code
 
 **Ask a codebase a focused question and keep the evidence behind the answer.**
-`valio.code` turns a pinned project view into searchable source, symbols,
-relationships and bounded context for developers and coding agents.
+`valio.code` turns a pinned project view into searchable source, typed
+declarations, relationships and bounded context for developers and coding
+agents.
 
-It is AGPL-3.0 software. The current implementation is a tested local vertical
-slice, not a completed v1. Read the [intelligence-wave status](docs/en/reference/intelligence-wave.md)
-before relying on a particular analysis result.
+It is AGPL-3.0 software and an evolving local vertical slice, not completed v1.
+Read the [intelligence-wave status](docs/en/reference/intelligence-wave.md) and
+[language-analysis reference](docs/en/reference/language-analysis.md) before
+relying on a capability.
 
 [English documentation](docs/en/README.md) · [Русская документация](README.ru.md)
 
 ## What it helps with
 
-- Find the implementation, symbol or error message behind a question without
-  losing the project and immutable view that supplied it.
-- Give an agent a small, scoped set of cited source and relationship evidence
-  instead of an undifferentiated repository dump.
-- Combine exact and lexical search with symbols, structural candidates,
-  semantic ranking, hybrid RRF and an optional reranker when a suitable model
-  profile is available.
-- Traverse local code facts to investigate impact: declared symbols, references,
-  calls, reads, writes, AST structure and bounded parent/child context.
-- Use the same scoped capabilities through HTTP and 18 MCP tools, so a person
-  and an agent can work from the same evidence.
+- Find source, symbols, declarations and error text while retaining the
+  repository and immutable view that supplied the result.
+- Give agents bounded, cited source and structural context instead of an entire
+  repository dump.
+- Combine lexical BM25, symbols, normalized-hash structural candidates, exact
+  cosine embeddings, hybrid RRF and an optional reranker.
+- Navigate containment from a type to its members and parameters, and inspect
+  unresolved import and call observations without mistaking them for facts.
+- Use the same view-scoped capabilities through HTTP and 19 MCP tools.
 
 ## Current intelligence layer
 
-Go has local cross-file symbol, reference, call, read and write analysis based
-on `go/types`; it is deliberately partial for external packages and build-tag
-combinations. C, C++, C#, Java, JavaScript, TypeScript, TSX and JSX are parsed
-by a WASM syntax helper. Their declarations, members, parameters, enum values
-and attributes are persisted for navigation.
+Go has partial local cross-file analysis through `go/types`. C, C++, C#, Java,
+JavaScript, TypeScript, TSX and JSX supply validated syntax reports and typed
+descriptors for written classes, structs, interfaces, enums, members,
+parameters, return types, modifiers, visibility and raw attribute syntax.
+`/api/v1/types` and MCP `type_query` serve them for all of these languages.
 
-Retrieval stores AST chunks for Go and a fallback for the other parsers. It can
-rank lexical BM25, symbols, normalized-hash structural candidates and exact
-cosine embeddings, fuse candidates with RRF and optionally rerank them. The
-result keeps its source/view scope. Structural hashes are not general MinHash;
-exact cosine is not an HNSW claim; non-Go syntax facts are not compiler-resolved
-cross-file calls or data flow.
+Non-Go descriptors are syntax evidence. They do not assert compiler-resolved
+types, imports, calls or overloads; ABI/layout; data/control flow; or evaluated
+enum values. A written expression such as `1 << 2` remains an expression.
+`/api/v1/structure/graph` and MCP `structure_graph` expose declaration/member/
+parameter containment with explicitly unresolved imports and calls. Non-Go
+method chunks support bounded parent-context expansion.
 
-There are eight versioned representation contracts: code, symbol, context,
-documentation, architecture, change, error and API. Current producers create
-the first four plus error and API facts. Architecture and change have no
-producer yet.
+## Representation contracts
 
-JSON AI profiles support local Ollama and LM Studio/OpenAI-compatible services,
-Docker-host and remote endpoints. The supplied Qwen3 4B/8B quantized aliases
-are guarded by model/dimension identity. A configured profile does not prove a
-remote model is running; load or import it and use the explicit probe. Start
-with the [AI profile example](deploy/ai-profiles.example.json).
+Eight versioned representations keep retrieval inputs distinct: code, symbol,
+context, documentation, architecture, change, error and API. Current producers
+create code, symbol, context, documentation, error and API facts. Architecture
+and change remain contracts without a producer, so they are not returned as
+available evidence.
 
-## Evidence and remaining work
+JSON profiles support Ollama, LM Studio/OpenAI-compatible, Docker-host and
+remote embedding endpoints. The verified local smoke used
+`qwen3-8b-lmstudio-docker` (Q8_0, 4096 dimensions), persisted 29 code
+embeddings, and ran semantic/hybrid retrieval. This is integration evidence,
+not a quality benchmark or remote-provider guarantee. Begin with the
+[AI profile example](deploy/ai-profiles.example.json).
 
-SurrealDB integration validation passed graph, retrieval, synthetic 3-D
-embeddings and six non-Go language parsers. The Docker build/race validation was
-still running when the wave record was written, so it is not claimed as passed.
-Implementation validation is recorded in `9277db0`; its documentation record is
-`641db16`.
+## Status and remaining work
 
-Full v1 work remains: SCIP-grade semantics for five languages, CFG and
-interprocedural analysis, SQL/API/event links, test and history intelligence,
-and GNN capabilities. See the [acceptance matrix and limits](docs/en/reference/intelligence-wave.md).
+The second integration wave is verified on Windows with the full Go test suite,
+`go vet`, real SurrealDB 3.2.4 and Jaeger, and a Compose smoke scenario. Docker
+also built the API, worker and migration images and reached healthy Compose
+services. Linux Docker `go test -race ./...` passed; database-dependent tests
+are skipped in that Linux build.
+
+Full v1 still needs SCIP-grade semantics for five languages, CFG and
+interprocedural analysis, SQL/API/event linking, and test/history intelligence.
+GNN capabilities are post-v1 research.
 
 ## Run locally
 

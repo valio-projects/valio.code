@@ -70,7 +70,9 @@ export class User { constructor(public readonly name: string) {} label(prefix: s
   $symbolSearch = Send-API 'search' @{ query = 'symbol:User'; scope = $scope }
   if ($symbolSearch.total -ne 7 -or !$symbolSearch.complete) { throw 'Cross-language symbol search failed' }
   $types = Invoke-RestMethod -Uri "$Server/api/v1/types?name=User&projectId=$id&viewId=$($receipt.viewId)" -Headers $headers
-  if (@($types.candidates).Count -ne 1) { throw 'Rich type lookup failed' }
+  if (@($types.candidates).Count -ne 7) { throw 'Multi-language rich type lookup failed' }
+  $structure = Send-API 'structure/graph' @{ name = 'User'; depth = 3; scope = $scope }
+  if (@($structure.files).Count -ne 6 -or $structure.truncated) { throw 'Multi-language declaration graph failed' }
   $syntax = Send-API 'syntax/query' @{ scope = $scope; name = 'User' }
   $expectedSyntaxLanguages = @('c', 'cpp', 'csharp', 'java', 'javascript', 'typescript')
   $actualSyntaxLanguages = @($syntax.reports | ForEach-Object { $_.language } | Sort-Object)

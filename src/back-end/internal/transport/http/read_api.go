@@ -55,7 +55,7 @@ func (s *Server) registerRead(mux *http.ServeMux) {
 			return
 		}
 		features := []map[string]string{}
-		for _, name := range []string{"source_text", "symbols", "types", "compiler", "references", "calls", "reads_writes", "retrieval_chunks", "lexical", "structural_fingerprint", "multilanguage_syntax", "vectors", "context", "git_diff", "configuration_graph", "cfg", "dataflow"} {
+		for _, name := range []string{"source_text", "symbols", "types", "compiler", "references", "calls", "reads_writes", "retrieval_chunks", "lexical", "structural_fingerprint", "multilanguage_syntax", "multilanguage_types", "syntax_structure", "vectors", "context", "git_diff", "configuration_graph", "cfg", "dataflow"} {
 			status := "unsupported"
 			if name == "source_text" || name == "retrieval_chunks" || name == "lexical" || name == "context" {
 				status = "ready"
@@ -63,7 +63,7 @@ func (s *Server) registerRead(mux *http.ServeMux) {
 			if name == "symbols" || name == "types" || name == "compiler" || name == "references" || name == "calls" || name == "reads_writes" || name == "structural_fingerprint" {
 				status = "partial"
 			}
-			if name == "multilanguage_syntax" && s.Ingestion.Syntax != nil {
+			if (name == "multilanguage_syntax" || name == "multilanguage_types" || name == "syntax_structure") && s.Ingestion.Syntax != nil {
 				status = "partial"
 			}
 			if name == "vectors" && s.Queries.Models != nil {

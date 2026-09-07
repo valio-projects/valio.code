@@ -57,7 +57,8 @@ func (c *Client) ForDatabase(database string) (*Client, error) {
 	return New(cfg)
 }
 
-// Query uses the JSON RPC query method. Values travel as bound parameters,
+// Query uses the RPC query method with typed CBOR requests and responses.
+// Values travel as bound parameters,
 // never interpolated SQL or URL parameters (source payloads can be large).
 func (c *Client) Query(ctx context.Context, sql string, vars map[string]any) (statements []Statement, err error) {
 	ctx, span := otel.Tracer("valio.infrastructure.surreal").Start(ctx, "surreal.query")
@@ -71,7 +72,7 @@ func (c *Client) Query(ctx context.Context, sql string, vars map[string]any) (st
 	if vars == nil {
 		vars = map[string]any{}
 	}
-	body, err := json.Marshal(map[string]any{"id": "query", "method": "query", "params": []any{sql, vars}})
+	body, err := (rpcRequestEncoder{}).Encode(sql, vars)
 	if err != nil {
 		return nil, errors.New("cannot encode database parameters")
 	}
@@ -79,8 +80,8 @@ func (c *Client) Query(ctx context.Context, sql string, vars map[string]any) (st
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Content-Type", "application/cbor")
+	req.Header.Set("Accept", "application/cbor")
 	req.Header.Set("Surreal-NS", c.config.Namespace)
 	req.Header.Set("Surreal-DB", c.config.Database)
 	if c.config.DatabaseAuth {
@@ -105,16 +106,20 @@ func (c *Client) Query(ctx context.Context, sql string, vars map[string]any) (st
 		return nil, errors.New("database response exceeds 32 MiB budget")
 	}
 	var rpc struct {
+		ID     string      `json:"id"`
 		Result []Statement `json:"result"`
 		Error  *struct {
 			Code int `json:"code"`
 		} `json:"error"`
 	}
-	if err = json.Unmarshal(data, &rpc); err != nil {
+	if err = (rpcResponseDecoder{}).Decode(data, &rpc); err != nil {
 		return nil, errors.New("invalid database RPC response")
 	}
 	if rpc.Error != nil {
 		return nil, fmt.Errorf("database RPC error %d", rpc.Error.Code)
+	}
+	if rpc.ID != "query" || len(rpc.Result) == 0 {
+		return nil, errors.New("invalid database RPC response envelope")
 	}
 	for i, s := range rpc.Result {
 		if s.Status != "OK" {

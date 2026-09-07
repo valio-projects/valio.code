@@ -2,6 +2,7 @@ package queries
 
 import (
 	"context"
+	"fmt"
 	"github.com/valio-projects/valio.code/internal/application/fault"
 	"github.com/valio-projects/valio.code/internal/domain/retrieval"
 	"github.com/valio-projects/valio.code/internal/domain/snapshots"
@@ -55,8 +56,14 @@ func (s Service) scopedChunks(ctx context.Context, scope SearchScope) (snapshots
 			return v, nil, fault.ErrForbidden
 		}
 		for _, chunk := range a.Chunks {
-			if seen[chunk.ID] || chunk.FileID != f.ID || chunk.RepositoryID != string(f.RepositoryID) || !slices.Equal(chunk.ProjectIDs, f.ProjectIDs) || chunk.Start < 0 || chunk.End < chunk.Start || chunk.End > f.Size || chunk.Text != "" && len(chunk.Text) != chunk.End-chunk.Start {
-				return v, nil, fault.ErrInvalid
+			if chunk.ID == "" || seen[chunk.ID] {
+				return v, nil, fmt.Errorf("chunk identity is empty or duplicated: %w", fault.ErrInvalid)
+			}
+			if chunk.FileID != f.ID || chunk.RepositoryID != string(f.RepositoryID) || !slices.Equal(chunk.ProjectIDs, f.ProjectIDs) {
+				return v, nil, fmt.Errorf("chunk membership differs from source: %w", fault.ErrInvalid)
+			}
+			if chunk.Start < 0 || chunk.End < chunk.Start || chunk.End > f.Size || chunk.Text != "" && len(chunk.Text) != chunk.End-chunk.Start {
+				return v, nil, fmt.Errorf("chunk range differs from source: %w", fault.ErrInvalid)
 			}
 			seen[chunk.ID] = true
 			if len(scope.ProjectIDs) > 0 && !overlaps(chunk.ProjectIDs, scope.ProjectIDs) {

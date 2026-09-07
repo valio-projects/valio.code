@@ -950,6 +950,99 @@
         },
         "type": "object"
       },
+      "queries.StructureFileResult": {
+        "additionalProperties": false,
+        "properties": {
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/structuregraph.Edge"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "fileId": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/structuregraph.Node"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "path": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "queries.StructureQuery": {
+        "additionalProperties": false,
+        "properties": {
+          "depth": {
+            "type": "integer"
+          },
+          "fileId": {
+            "type": "string"
+          },
+          "limit": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "nodeId": {
+            "type": "string"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/queries.SearchScope"
+          }
+        },
+        "type": "object"
+      },
+      "queries.StructureResult": {
+        "additionalProperties": false,
+        "properties": {
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/queries.StructureFileResult"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "projection": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "stopReasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "truncated": {
+            "type": "boolean"
+          },
+          "viewId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "queries.SyntaxFile": {
         "additionalProperties": false,
         "properties": {
@@ -1455,6 +1548,163 @@
         },
         "type": "object"
       },
+      "structuregraph.ByteRange": {
+        "additionalProperties": false,
+        "properties": {
+          "end": {
+            "type": "integer"
+          },
+          "fileId": {
+            "type": "string"
+          },
+          "start": {
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "structuregraph.Edge": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence": {
+            "$ref": "#/components/schemas/structuregraph.Evidence"
+          },
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "projectIds": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "resolution": {
+            "type": "string"
+          },
+          "sourceId": {
+            "type": "string"
+          },
+          "targetId": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "structuregraph.Evidence": {
+        "additionalProperties": false,
+        "properties": {
+          "producer": {
+            "type": "string"
+          },
+          "range": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/structuregraph.ByteRange"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "structuregraph.Node": {
+        "additionalProperties": false,
+        "properties": {
+          "attributes": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "declarationKind": {
+            "type": "string"
+          },
+          "enumValue": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "evidence": {
+            "$ref": "#/components/schemas/structuregraph.Evidence"
+          },
+          "fileId": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "modifiers": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "name": {
+            "type": "string"
+          },
+          "projectIds": {
+            "items": {
+              "type": "string"
+            },
+            "type": [
+              "array",
+              "null"
+            ]
+          },
+          "range": {
+            "$ref": "#/components/schemas/structuregraph.ByteRange"
+          },
+          "repositoryId": {
+            "type": "string"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "underlyingType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "visibility": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "typeinfo.ArrayDimension": {
         "additionalProperties": false,
         "properties": {
@@ -1526,6 +1776,16 @@
             "type": [
               "array",
               "null"
+            ]
+          },
+          "rawSyntax": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/typeinfo.Fact_string_"
+              },
+              {
+                "type": "null"
+              }
             ]
           }
         },
@@ -4813,6 +5073,133 @@
           }
         },
         "security": []
+      }
+    },
+    "/api/v1/structure/graph": {
+      "post": {
+        "operationId": "querySourceStructure",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/queries.StructureQuery"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/queries.StructureResult"
+                }
+              }
+            },
+            "description": "Successful response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "408": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            },
+            "description": "Sanitized error; SCOPE_TOO_LARGE is never a partial success"
+          }
+        }
       }
     },
     "/api/v1/syntax/query": {

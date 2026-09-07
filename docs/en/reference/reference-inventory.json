@@ -11,5 +11,15 @@
     {"name":"codebase-memory-mcp","revision":"aa44c28ea5ea82a5f811f0bace4f7857a68cac80","license":"MIT","use":"README feature survey; implementation-level review and porting queued."},
     {"name":"chunkhound","revision":"2ab775354d8d378bdacc8ea76b51a588362cfb99","license":"MIT","use":"README feature survey; implementation-level review and porting queued."}
   ],
-  "runtime": {"go":"1.26.8","surrealdb":"3.2.4","surrealdbImageDigest":"sha256:51baed8709f57f67dcf04b30e3177db846803fa9342dae2be58c6fa5f8d59843"}
+  "runtime": {"go":"1.26.8","surrealdb":"3.2.4","surrealdbImageDigest":"sha256:51baed8709f57f67dcf04b30e3177db846803fa9342dae2be58c6fa5f8d59843"},
+  "goDependencyInventory": {
+    "scope": "This inventory section records additions made for this wave, not the complete runtime dependency inventory.",
+    "policy": "Record direct runtime modules and every resolved runtime transitive module they introduce. Record module path, pinned version, license observed in that version, dependency path, and purpose; test-only modules are added only when promoted into the runtime build list.",
+    "modules": [
+      {"path":"github.com/surrealdb/surrealdb.go","version":"v1.6.0","license":"Apache-2.0","direct":true,"use":"Typed SurrealDB SDK transport and CBOR codec for repository records."},
+      {"path":"github.com/fxamacker/cbor/v2","version":"v2.9.3","license":"MIT","direct":true,"use":"Bounded typed CBOR encoding and decoding for SurrealDB repository records."},
+      {"path":"github.com/x448/float16","version":"v0.8.4","license":"MIT","direct":false,"via":"github.com/fxamacker/cbor/v2","use":"Resolved CBOR runtime transitive dependency for half-precision float support."},
+      {"path":"github.com/gofrs/uuid","version":"v4.4.0+incompatible","license":"MIT","direct":false,"via":"github.com/surrealdb/surrealdb.go/pkg/models","use":"Resolved SDK runtime transitive dependency for UUID model values."}
+    ]
+  }
 }

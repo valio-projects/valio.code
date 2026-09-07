@@ -5,9 +5,9 @@ type TypeQuery struct {
 	// Name selects an exact simple or fully qualified type name.
 	Name string `json:"name"`
 	// ViewID pins the immutable analysis version; an empty query value resolves latest once.
-	ViewID string `json:"viewId"`
+	ViewID string `json:"viewId,omitempty"`
 	// ProjectID narrows the query to one project in the selected view.
-	ProjectID string `json:"projectId"`
+	ProjectID string `json:"projectId,omitempty"`
 	// BuildProfileID narrows type facts to their recorded analysis profile.
-	BuildProfileID string `json:"buildProfileId"`
+	BuildProfileID string `json:"buildProfileId,omitempty"`
 }

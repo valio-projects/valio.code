@@ -2,11 +2,13 @@ package surreal
 
 import (
 	"context"
-	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/fxamacker/cbor/v2"
 )
 
 func TestBoundParametersAndScope(t *testing.T) {
@@ -15,15 +17,25 @@ func TestBoundParametersAndScope(t *testing.T) {
 		if r.Header.Get("Surreal-DB") != "workspace_test" {
 			t.Error("scope not bound")
 		}
-		var body struct {
-			Params []json.RawMessage `json:"params"`
+		if r.Header.Get("Content-Type") != "application/cbor" || r.Header.Get("Accept") != "application/cbor" {
+			t.Error("RPC must use CBOR in both directions")
 		}
-		_ = json.NewDecoder(r.Body).Decode(&body)
-		if strings.Contains(string(body.Params[0]), dangerous) {
+		var body struct {
+			Params []any `cbor:"params"`
+		}
+		data, _ := io.ReadAll(r.Body)
+		if err := cbor.Unmarshal(data, &body); err != nil {
+			t.Error(err)
+			return
+		}
+		if len(body.Params) != 2 {
+			t.Error("missing bound parameters")
+			return
+		}
+		if strings.Contains(body.Params[0].(string), dangerous) {
 			t.Error("data interpolated in SQL")
 		}
-		w.Header().Set("Content-Type", "application/json")
-		_, _ = w.Write([]byte(`{"result":[{"status":"OK","result":[]}]}`))
+		writeRPCFixture(t, w, "OK", []any{})
 	}))
 	defer srv.Close()
 	c, err := New(Config{Endpoint: srv.URL, Namespace: "valio", Database: "workspace_test"})
@@ -36,7 +48,7 @@ func TestBoundParametersAndScope(t *testing.T) {
 }
 func TestDatabaseErrorDoesNotExposePayload(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write([]byte(`{"result":[{"status":"ERR","result":"secret source content"}]}`))
+		writeRPCFixture(t, w, "ERR", "secret source content")
 	}))
 	defer srv.Close()
 	c, _ := New(Config{Endpoint: srv.URL, Namespace: "valio", Database: "test"})
@@ -44,4 +56,15 @@ func TestDatabaseErrorDoesNotExposePayload(t *testing.T) {
 	if err == nil || strings.Contains(err.Error(), "secret") {
 		t.Fatalf("unsafe error: %v", err)
 	}
+}
+
+func writeRPCFixture(t *testing.T, w http.ResponseWriter, status string, result any) {
+	t.Helper()
+	data, err := cbor.Marshal(map[string]any{"id": "query", "result": []any{map[string]any{"status": status, "result": result}}})
+	if err != nil {
+		t.Error(err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/cbor")
+	_, _ = w.Write(data)
 }

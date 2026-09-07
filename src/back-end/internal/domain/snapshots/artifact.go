@@ -25,4 +25,6 @@ type Artifact struct {
 	Graph json.RawMessage `json:"graph,omitempty"`
 	// Syntax stores validated non-Go AST facts; unresolved bindings remain explicit.
 	Syntax json.RawMessage `json:"syntax,omitempty"`
+	// StructureGraph preserves syntax containment separately from compiler-resolved calls.
+	StructureGraph json.RawMessage `json:"structureGraph,omitempty"`
 }

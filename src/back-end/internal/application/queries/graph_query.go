@@ -29,8 +29,8 @@ const (
 // EdgeKinds narrows traversal to declared relation kinds; an empty list accepts
 // every stored relation kind permitted by the selected mode.
 type GraphQuery struct {
-	// Mode selects symbols, direct relations, neighborhood traversal, or paths.
-	Mode GraphMode `json:"mode"`
+	// Mode is required by the HTTP graph endpoint; named MCP tools supply it.
+	Mode GraphMode `json:"mode,omitempty"`
 	// Scope pins the workspace, immutable view, and optional project memberships.
 	Scope SearchScope `json:"scope"`
 	// Name is required by GraphSymbols and uses exact Go identifier matching.

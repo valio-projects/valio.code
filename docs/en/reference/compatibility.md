@@ -7,6 +7,9 @@ uses inline development values; API, worker and migration authenticate as root.
 Verified mechanisms:
 
 - JSON RPC bound query parameters, including source strings containing SQL delimiters.
+- Typed CBOR repository records through `github.com/surrealdb/surrealdb.go` 1.6.0
+  and `github.com/fxamacker/cbor/v2` 2.9.3, including source-like, UUID, date and
+  Unicode strings plus 64-bit integers.
 - Explicit namespace/database creation (3.2 does not implicitly create missing scopes).
 - Database-scoped system accounts and rejection of cross-database authentication.
 - Immutable create collision, stable payload retrieval and versioned migration.
@@ -27,6 +30,9 @@ Compatibility findings requiring explicit design choices:
 4. Docker Desktop's internal-only network did not expose the test database port. The test
    override makes that network non-internal and publishes only `127.0.0.1:18000`. The base
    deployment keeps the database unpublished on its internal network.
+5. SurrealDB 3.2.4 JSON RPC applies legacy coercion to a value such as
+   `id: number`, yielding the record ID `id:number`. Typed CBOR records preserve
+   the caller's value and are the required repository codec for this boundary.
 
 Still unverified: FTS/HNSW physical indexes, concurrent initial index creation, SQL parser
 native dependencies, five SCIP compiler adapters, 10M-line throughput, storage amplification,

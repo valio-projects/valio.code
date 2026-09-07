@@ -4,10 +4,10 @@ package queries
 type RetrievalQuery struct {
 	// Scope fixes workspace, project membership and source version.
 	Scope SearchScope `json:"scope"`
-	// Query is plain text, not the boolean source-search DSL.
-	Query string `json:"query"`
+	// Query is plain text, not the boolean DSL; structural mode uses TargetChunkID instead.
+	Query string `json:"query,omitempty"`
 	// Mode is lexical, symbol, structural, semantic or hybrid.
-	Mode string `json:"mode"`
+	Mode string `json:"mode,omitempty"`
 	// TargetChunkID selects the source example for structural search.
 	TargetChunkID string `json:"targetChunkId,omitempty"`
 	// ModelProfile selects an operator-configured AI profile for semantic search.

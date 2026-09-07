@@ -132,6 +132,7 @@ func main() {
 	operation("/api/v1/embeddings/index", "post", "indexEmbeddings", schema(queries.EmbeddingCommand{}), schema(queries.EmbeddingResult{}), nil, false)
 	operation("/api/v1/ai/probe", "post", "probeAIProvider", schema(queries.ProviderProbe{}), map[string]any{"type": "object"}, nil, false)
 	operation("/api/v1/syntax/query", "post", "querySyntax", schema(queries.SyntaxQuery{}), schema(queries.SyntaxResult{}), nil, false)
+	operation("/api/v1/structure/graph", "post", "querySourceStructure", schema(queries.StructureQuery{}), schema(queries.StructureResult{}), nil, false)
 	operation("/api/v1/types", "get", "queryTypes", nil, schema(queries.TypeResult{}), []any{parameter("name", "query", true), parameter("viewId", "query", false), parameter("projectId", "query", false), parameter("buildProfileId", "query", false)}, false)
 	operation("/api/v1/files/{id}", "get", "getSourceFile", nil, schema(search.File{}), []any{parameter("id", "path", true), parameter("viewId", "query", false)}, false)
 	operation("/api/v1/capabilities", "get", "getCapabilities", nil, map[string]any{"type": "object", "properties": map[string]any{"features": map[string]any{"type": "array", "items": map[string]any{"type": "object", "properties": map[string]any{"name": map[string]string{"type": "string"}, "status": map[string]string{"type": "string"}}}}, "limits": map[string]any{"type": "object", "additionalProperties": map[string]string{"type": "integer"}}, "authentication": map[string]string{"type": "string"}, "buildProfileId": map[string]string{"type": "string"}}}, nil, false)
