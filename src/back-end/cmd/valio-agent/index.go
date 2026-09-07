@@ -28,6 +28,12 @@ func runIndex(ctx context.Context, args []string, out io.Writer) error {
 	if *interval < 100*time.Millisecond {
 		return errors.New("watch interval must be at least 100ms")
 	}
+	if err := upload.Validate(); err != nil {
+		return err
+	}
+	if *max <= 0 || *max > agent.DefaultMaxFileBytes {
+		return errors.New("max-file-bytes must be between 1 and 2097152")
+	}
 	if *spool == "" {
 		*spool = filepath.Join(*root, ".valio", "spool")
 	}

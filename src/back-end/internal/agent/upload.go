@@ -5,9 +5,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/valio-projects/valio.code/internal/validation"
 	"io"
 	"net/http"
-	"net/url"
 	"strings"
 	"time"
 )
@@ -53,6 +53,9 @@ func Upload(ctx context.Context, opts UploadOptions, s Snapshot) (UploadResult, 
 // Upload validates s, sends it, and returns a sanitized server receipt.
 func (u UploadClient) Upload(ctx context.Context, s Snapshot) (UploadResult, error) {
 	opts := u.Options
+	if err := opts.Validate(); err != nil {
+		return UploadResult{}, err
+	}
 	if err := ValidateSnapshot(s); err != nil {
 		return UploadResult{}, err
 	}
@@ -60,8 +63,8 @@ func (u UploadClient) Upload(ctx context.Context, s Snapshot) (UploadResult, err
 	if err != nil {
 		return UploadResult{}, err
 	}
-	if strings.TrimSpace(opts.Token) == "" || strings.ContainsAny(opts.Token, "\r\n") {
-		return UploadResult{}, errors.New("upload token is required and must be a single-line token")
+	if err := validation.Token(opts.Token, 1); err != nil {
+		return UploadResult{}, err
 	}
 	if opts.WorkspaceID == "" || opts.RepositoryID == "" {
 		return UploadResult{}, errors.New("workspace and repository IDs are required")
@@ -84,6 +87,9 @@ func (u UploadClient) Upload(ctx context.Context, s Snapshot) (UploadResult, err
 	client := &http.Client{Transport: u.Transport, Timeout: 60 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}
 	response, err := client.Do(request)
 	if err != nil {
+		if ctx.Err() != nil {
+			return UploadResult{}, ctx.Err()
+		}
 		return UploadResult{}, errors.New("snapshot upload failed; sanitized snapshot retained in spool")
 	}
 	defer response.Body.Close()
@@ -93,7 +99,8 @@ func (u UploadClient) Upload(ctx context.Context, s Snapshot) (UploadResult, err
 	// Never include server bodies or transport errors in diagnostics: either can
 	// echo credentials, source values, or an authenticated redirect destination.
 	var result UploadResult
-	if json.NewDecoder(io.LimitReader(response.Body, 64*1024)).Decode(&result) != nil || result.SnapshotID == "" || result.Status == "" {
+	body, readErr := io.ReadAll(io.LimitReader(response.Body, 64*1024+1))
+	if readErr != nil || len(body) > 64*1024 || json.Unmarshal(body, &result) != nil || result.SnapshotID == "" || result.Status == "" {
 		return UploadResult{}, errors.New("server returned an invalid upload receipt; snapshot retained in spool")
 	}
 	return result, nil
@@ -102,7 +109,7 @@ func ingestionEndpoint(raw string) (string, error) {
 	invalid := func() (string, error) {
 		return "", errors.New("server must use HTTPS (HTTP allowed only for localhost, 127.0.0.1, or ::1)")
 	}
-	u, e := url.Parse(raw)
+	u, e := validation.Endpoint(raw, true)
 	if e != nil || u.Host == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" {
 		return invalid()
 	}

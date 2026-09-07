@@ -4,6 +4,7 @@ package git
 import (
 	"context"
 	"errors"
+	"github.com/valio-projects/valio.code/internal/validation"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -52,18 +53,24 @@ func Run(ctx context.Context, root string, args ...string) ([]byte, error) {
 	cmd.Env = append(cmd.Env, "GIT_TERMINAL_PROMPT=0")
 	out, err := cmd.Output()
 	if err != nil {
+		if ctx.Err() != nil {
+			return nil, ctx.Err()
+		}
 		return nil, errors.New("git operation failed")
 	}
 	return out, nil
 }
 
 func Discover(ctx context.Context, root string) (Repository, error) {
-	abs, err := filepath.Abs(root)
+	abs, err := validation.Directory(root)
 	if err != nil {
-		return Repository{}, errors.New("invalid repository root")
+		return Repository{}, err
 	}
 	b, err := Run(ctx, abs, "rev-parse", "--show-toplevel")
 	if err != nil {
+		if ctx.Err() != nil {
+			return Repository{}, ctx.Err()
+		}
 		return Repository{}, errors.New("root is not a Git worktree")
 	}
 	r := Repository{Root: filepath.Clean(strings.TrimSpace(string(b))), Refs: []string{}}

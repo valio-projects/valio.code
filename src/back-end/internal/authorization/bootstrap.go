@@ -8,6 +8,7 @@ import (
 	"crypto/subtle"
 	"encoding/base64"
 	"errors"
+	"github.com/valio-projects/valio.code/internal/validation"
 	"net"
 	"net/http"
 	"net/url"
@@ -25,15 +26,15 @@ type Bootstrap struct {
 
 // NewBootstrap validates token and trustedOrigins, then creates an ephemeral session signing key.
 func NewBootstrap(token string, trustedOrigins []string) (*Bootstrap, error) {
-	if len(token) < 32 || strings.TrimSpace(token) != token || strings.ContainsAny(token, "\r\n") {
-		return nil, errors.New("VALIO_API_TOKEN requires at least 32 characters without surrounding whitespace")
+	if err := validation.Token(token, 32); err != nil {
+		return nil, err
 	}
 	a := &Bootstrap{tokenHash: sha256.Sum256([]byte(token)), origins: map[string]bool{}}
 	if _, e := rand.Read(a.sessionKey[:]); e != nil {
 		return nil, e
 	}
 	for _, origin := range trustedOrigins {
-		u, e := url.Parse(origin)
+		u, e := validation.Endpoint(origin, false)
 		if e != nil || u.User != nil || u.RawQuery != "" || u.Fragment != "" || u.Path != "" || !(u.Scheme == "https" || u.Scheme == "http") || u.Host == "" {
 			return nil, errors.New("invalid trusted origin")
 		}

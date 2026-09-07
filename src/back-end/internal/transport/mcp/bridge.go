@@ -3,8 +3,8 @@ package mcp
 import (
 	"context"
 	"errors"
+	"github.com/valio-projects/valio.code/internal/validation"
 	"net/http"
-	"net/url"
 	"strings"
 	"time"
 
@@ -21,8 +21,8 @@ type Bridge struct {
 // NewBridge accepts HTTPS or explicit loopback HTTP and refuses redirects so a
 // server cannot redirect the bearer token to a different origin.
 func NewBridge(endpoint, token string) (*Bridge, error) {
-	u, err := url.Parse(endpoint)
-	if err != nil || u.Host == "" || u.User != nil || u.RawQuery != "" || u.Fragment != "" || len(token) < 32 {
+	u, err := validation.Endpoint(endpoint, true)
+	if err != nil || validation.Token(token, 32) != nil {
 		return nil, errors.New("invalid MCP endpoint or token")
 	}
 	loopback := u.Hostname() == "localhost" || u.Hostname() == "127.0.0.1" || u.Hostname() == "::1"

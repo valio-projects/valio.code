@@ -5,6 +5,7 @@ import (
 	"github.com/valio-projects/valio.code/internal/application/fault"
 	"github.com/valio-projects/valio.code/internal/domain"
 	"github.com/valio-projects/valio.code/internal/projects"
+	"github.com/valio-projects/valio.code/internal/validation"
 	"net/url"
 	"regexp"
 	"strings"
@@ -65,6 +66,12 @@ func (s Service) Register(ctx context.Context, r domain.Repository) (domain.Repo
 	if r.RemoteURL != "" {
 		u, e := url.Parse(r.RemoteURL)
 		if e != nil || u.User != nil || u.RawQuery != "" || u.Fragment != "" || !(u.Scheme == "https" || u.Scheme == "ssh") || strings.TrimSpace(u.Host) == "" {
+			return r, fault.ErrInvalid
+		}
+		// Apply identical host/port/path syntax checks without contacting the remote.
+		check := *u
+		check.Scheme = "https"
+		if _, e := validation.Endpoint(check.String(), false); e != nil {
 			return r, fault.ErrInvalid
 		}
 	}
