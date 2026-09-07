@@ -1,6 +1,8 @@
 /.tools/
 /bin/
 /dist/
+/src/back-end/bin/
+/src/back-end/dist/
 **/node_modules/
 **/coverage/
 *.test
@@ -17,6 +19,7 @@
 /.valio/
 *.scip
 !testdata/**/*.scip
+!src/back-end/testdata/**/*.scip
 *.pem
 *.key
 *.pfx

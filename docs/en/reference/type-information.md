@@ -8,7 +8,7 @@ other language producers are future integrations, not implemented capabilities.
 
 ## Identity and lookup
 
-`typeinfo.TypeDescriptor` in `internal/domain/typeinfo` contains its own identity and a `TypeScope` with
+`typeinfo.TypeDescriptor` in `src/back-end/internal/domain/typeinfo` contains its own identity and a `TypeScope` with
 `workspaceId`, `projectId`, `buildProfileId` and immutable `versionId`. A type's
 simple name and fully qualified name are facts, not identities. Go's current
 qualified name is the syntactic package name plus type name; it is not claimed
@@ -145,8 +145,8 @@ catalog. Unsupported future features need real language producers and evidence.
 
 ## Package boundaries
 
-Focused files in the domain-only `internal/domain/typeinfo` package define facts, references, kinds, attributes, members,
-constants, layouts and type descriptors. `internal/analysis` owns Go parsing and
+Focused files in the domain-only `src/back-end/internal/domain/typeinfo` package define facts, references, kinds, attributes, members,
+constants, layouts and type descriptors. `src/back-end/internal/analysis` owns Go parsing and
 optional checking. `types.GoMapper` adds workspace/project/build-profile/version
 scope, repository-scoped syntax IDs and source evidence to an `analysis.Report`.
 These syntax IDs are local to the pinned analysis version; they do not claim

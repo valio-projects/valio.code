@@ -1,6 +1,6 @@
 # Web workbench
 
-The `web/` application is a React 19, TypeScript, Vite 8, HeroUI 3 and Tailwind CSS 4
+The `src/front-end/` application is a React 19, TypeScript, Vite 8, HeroUI 3 and Tailwind CSS 4
 workbench. The feature folders separate workspace, projects, authentication, search,
 source viewing, capabilities and type inspection. Shared API adapters, domain models,
 providers and shell components have focused responsibilities. It contains no demo
@@ -8,13 +8,13 @@ dataset, fallback records or seeded counts.
 
 ## Run and build
 
-From `web/`, run `npm ci`, `npm test`, and `npm run build`. Run `npm run dev` for Vite
+From `src/front-end/`, run `npm ci`, `npm test`, and `npm run build`. Run `npm run dev` for Vite
 development; `/api` proxies to an API listening at `127.0.0.1:8090`. Dependencies are
 exactly pinned with the generated npm lockfile. Node 26.8.1 is used in the build
 image and CI, matching the test dependencies' engine requirement. The Docker
 build runs the component tests before producing assets.
 
-Compose builds `web/Dockerfile` with the repository root as context. Its final nginx
+Compose builds `src/front-end/Dockerfile` with the repository root as context. Its final nginx
 image runs as UID 101 on port 8080. Node and nginx base images are pinned to verified
 multi-platform image digests. nginx serves the SPA and forwards `/api/`, `/mcp`,
 `/healthz`, and `/readyz` to `api:8090`. `/health` checks the static web server.

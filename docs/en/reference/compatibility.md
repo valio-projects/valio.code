@@ -1,8 +1,8 @@
 # Measured compatibility baseline
 
 Validated locally on Windows using Go 1.26.8 and SurrealDB 3.2.4 in Docker Compose.
-SurrealDB is not started as a native Windows process. Local credentials are generated
-into ignored `.env`; API and worker database users are provisioned separately.
+SurrealDB is not started as a native Windows process. The current local Compose file
+uses inline development values; API, worker and migration authenticate as root.
 
 Verified mechanisms:
 
@@ -32,8 +32,11 @@ Still unverified: FTS/HNSW physical indexes, concurrent initial index creation, 
 native dependencies, five SCIP compiler adapters, 10M-line throughput, storage amplification,
 consistent backup/restore and the complete v1 failure-injection matrix.
 
-Reproduce: `scripts/setup.ps1`, then `scripts/test-integration.ps1` (or equivalent Go tests
-with VALIO_TEST_DB_URL and VALIO_TEST_DB_PASSWORD pointing to the Compose test instance).
+Reproduce with `scripts/test-integration.ps1`. It starts its own
+`valio-code-test` Compose project with the test override, then removes that project
+without volumes; the base local stack does not need to be stopped. Equivalent Go
+tests require `VALIO_TEST_DB_URL` and `VALIO_TEST_DB_PASSWORD` pointing to the
+isolated Compose instance.
 
 References: [SurrealDB HTTP/RPC transport](https://surrealdb.com/docs/reference/rest-api/http-protocol),
 [UPDATE semantics](https://surrealdb.com/docs/reference/query-language/statements/update).

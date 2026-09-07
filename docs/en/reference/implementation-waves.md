@@ -12,7 +12,7 @@ separately from the target architecture. SurrealDB must run through Docker Compo
 2. **Rich type metadata wave**: query types by name and versioned project context;
    members, parameters, accessibility, modifiers, attributes, enum values and uses,
    underlying types, dimensions and compiler-backed layout. Unknown information remains
-   explicitly unknown. See type-information.md for the detailed contract and actual coverage.
+   explicitly unknown. See [the type-information contract](type-information.md) for the detailed contract and actual coverage.
 3. **Frontend API wave**: application services, authenticated HTTP contracts, immutable
    ingestion/publication, search/view/type APIs and integration tests.
 4. **Frontend wave**: React/Vite/HeroUI pages consuming those contracts, real empty/error/
@@ -97,3 +97,37 @@ quality measurements. No v1 completion or performance claim is made by this docu
 The current foundation passes Windows Go unit/vet checks, real Docker SurrealDB
 integration and Linux race tests. These are correctness checks on small fixtures,
 not evidence for 10-million-line scale, five-language compiler support or full v1.
+
+## Repository and documentation wave
+
+- `e6b426b`: moved tracked application sources with `git mv` into `src/back-end`
+  and `src/front-end`; updated Docker, scripts and CI. The backend module import
+  path stays unchanged.
+- Local Compose now uses one explicit `root` / `valio` database account across
+  migration, API and worker. This replaces the earlier separate-password decision
+  for the local example. Setup scripts and the environment-file prerequisite were
+  removed. Source policy and immutable/evidence contracts still apply.
+- Existing local data survived credential rotation. Isolated Compose integration
+  checks and the native-agent smoke scenario passed after the move. Twelve web
+  tests and the production build passed from the new source directory.
+
+## Design follow-ups, not implemented capabilities
+
+The documentation wave adds English and Russian product READMEs, installation,
+configuration, contribution and observability guides, and architecture with ten
+diagrams per language. Design notes cover graph extensions, eight embedding
+representations, retrieval strategies and separate agent/project configuration.
+They distinguish existing behavior from proposed features. Markdown links and
+all 24 Mermaid diagrams are checked; this wave adds no new analysis capability.
+
+| Priority | Increment | Required foundation and acceptance |
+|---|---|---|
+| 1 | Base agent configuration and separate Project profiles | Validated file reader, explicit precedence, multiple source roots, linked-project scope and deterministic reload; no accidental remote/local Project identity conflation |
+| 2 | AST chunk records, generated metadata headers and bounded parent expansion | Immutable source spans, chunk/profile fingerprints, oversized-function fixtures, budget and policy tests |
+| 3 | Compiler-backed import/export, symbols, references and calls | Compilation-unit analysis, unresolved candidates, dependency invalidation, cross-file and cross-project fixtures |
+| 4 | CFG, def-use, control dependence and PDG slicing | Versioned IR, branch/exception semantics, alias policy and independently checked slices |
+| 5 | BM25, dense embeddings, hybrid fusion and reranking | SurrealDB compatibility, held-out Russian/English queries, latency/cost budgets, baseline ablations and model-space isolation |
+
+These increments refine the approved stages rather than adding separate storage
+systems. See [graphs and embeddings](../design/code-graphs-and-embeddings.md),
+[retrieval](../design/retrieval.md) and [agent configuration](../design/agent-configuration.md).

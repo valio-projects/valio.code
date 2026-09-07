@@ -10,6 +10,8 @@
 **/dist
 **/coverage
 bin
+src/back-end/bin
+src/back-end/dist
 data
 backups
 spool
